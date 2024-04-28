@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "58516534381",
+    "project_id": "tiendaelahorro-7b48f",
+    "storage_bucket": "tiendaelahorro-7b48f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58516534381:android:578bd0c9bbc773db67bb64",
+        "android_client_info": {
+          "package_name": "com.cad.proyectofinaletps1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "58516534381-gkelt0c5mtmcjv6mb0lur7mdu46go65l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cad.proyectofinaletps1",
+            "certificate_hash": "0c24475c4fc281a811c0a662efbd30f130eaf170"
+          }
+        },
+        {
+          "client_id": "58516534381-5nu1vrdegkra6p172i4kffkhl7lil66p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYmT6x0UHhUoa0wBCDWzjRVrh7yOFXsmc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "58516534381-5nu1vrdegkra6p172i4kffkhl7lil66p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
