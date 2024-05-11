@@ -68,7 +68,10 @@ class Login : AppCompatActivity() {
         })
 
         btnLogin.setOnClickListener {
-            if (edtCorreo.text.isNotEmpty() && edtPass.text.isNotEmpty()){
+            println("se dio click")
+            val homeIntent = Intent(this,activity_perfil::class.java)
+            startActivity(homeIntent)
+            /*if (edtCorreo.text.isNotEmpty() && edtPass.text.isNotEmpty()){
                 FirebaseAuth.getInstance().signInWithEmailAndPassword(edtCorreo.text.toString(),
                     edtPass.text.toString()).addOnCompleteListener{
                         if (it.isSuccessful){
@@ -77,7 +80,7 @@ class Login : AppCompatActivity() {
                             ShowAlert()
                         }
                 }
-            }
+            }*/
         }
 
         imvGoogle.setOnClickListener{
