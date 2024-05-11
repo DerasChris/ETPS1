@@ -68,10 +68,7 @@ class Login : AppCompatActivity() {
         })
 
         btnLogin.setOnClickListener {
-            println("se dio click")
-            val homeIntent = Intent(this,activity_perfil::class.java)
-            startActivity(homeIntent)
-            /*if (edtCorreo.text.isNotEmpty() && edtPass.text.isNotEmpty()){
+            if (edtCorreo.text.isNotEmpty() && edtPass.text.isNotEmpty()){
                 FirebaseAuth.getInstance().signInWithEmailAndPassword(edtCorreo.text.toString(),
                     edtPass.text.toString()).addOnCompleteListener{
                         if (it.isSuccessful){
@@ -80,15 +77,25 @@ class Login : AppCompatActivity() {
                             ShowAlert()
                         }
                 }
-            }*/
+            }
         }
 
-        imvGoogle.setOnClickListener{
-            val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
+        imvGoogle.setOnClickListener {
+            // Configurar opciones de inicio de sesión de Google
 
-            val googleClient = GoogleSignIn.getClient(this,googleConf)
-            startActivityForResult(googleClient.signInIntent,GOOGLE_SIGN_IN)
+            val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+
+            // Crear cliente de inicio de sesión de Google
+            val googleClient = GoogleSignIn.getClient(this, googleConf)
+
+            googleClient.signOut()
+
+            // Iniciar sesión de Google
+            val signInIntent = googleClient.signInIntent
+            startActivityForResult(signInIntent, GOOGLE_SIGN_IN)
         }
 
     }
@@ -103,7 +110,7 @@ class Login : AppCompatActivity() {
     }
 
     private fun ShowHome(email: String, provider: ProviderType){
-        val homeIntent = Intent(this,MainActivity::class.java).apply {
+        val homeIntent = Intent(this,navegacion::class.java).apply {
             putExtra("Mail",email)
             putExtra("provider",provider.name)
         }
