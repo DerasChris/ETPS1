@@ -19,7 +19,9 @@ class MainActivity : AppCompatActivity() {
         val email = bundle?.getString("Mail")
         val provider = bundle?.getString("provider")
 
+
         val txtMail = findViewById<TextView>(R.id.txtmail)
+
 
         txtMail.setText(email.toString())
 

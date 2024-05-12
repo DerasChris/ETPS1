@@ -27,7 +27,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [productosFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class productosFragment : Fragment() {
+class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -42,12 +42,9 @@ class productosFragment : Fragment() {
     }
 
     override fun onCreateView(
-
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_productos, container, false)
 
         // Encontrar RecyclerView en el diseño del fragmento
@@ -57,51 +54,62 @@ class productosFragment : Fragment() {
         val layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerView.layoutManager = layoutManager
 
-        // Referencia a la base de datos de Firebase
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("productos")
 
-        // Lista para almacenar los datos recuperados de Firebase
         val dataList: MutableList<Productos> = mutableListOf()
+        val productKeys: MutableList<String> = mutableListOf()
 
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Limpiar la lista de datos antes de agregar nuevos datos
                 dataList.clear()
+                productKeys.clear()
 
                 for (snapshot in dataSnapshot.children) {
-                    // Obtener nombre, descripción y precio de cada producto
+                    val productKey = snapshot.key
+                    productKey?.let {productKeys.add(it)}
+
                     val nombre = snapshot.child("nombre").getValue(String::class.java)
                     val descripcion = snapshot.child("descripcion").getValue(String::class.java)
                     val precio = snapshot.child("precio").getValue(Double::class.java)
                     val img = snapshot.child("filepath").getValue(String::class.java)
+                    val barcode = snapshot.child("barcode").getValue(Double::class.java)
+                    val categoria = snapshot.child("categoria").getValue(String::class.java)
+                    val marca = snapshot.child("marca").getValue(String::class.java)
 
-                    // Verificar si los valores no son nulos
+
                     if (nombre != null && descripcion != null && precio != null) {
-                        // Agregar el producto a la lista de datos
-                        dataList.add(Productos(nombre, descripcion, precio,img))
+                        dataList.add(Productos(nombre, descripcion, precio, img,barcode,categoria,marca,productKey))
                     }
                 }
 
-                // Crear y configurar el adaptador del RecyclerView con la lista de datos
-                val adapter = AdaptadorProductos(dataList)
+                val adapter = AdaptadorProductos(dataList,productKeys)
+                // Configurar el listener en el adaptador
+                adapter.setOnItemClickListener(this@productosFragment)
                 recyclerView.adapter = adapter
+
+
             }
             override fun onCancelled(databaseError: DatabaseError) {
-                // Manejar errores
+                // Manejar errores de Firebase
             }
         })
 
         return view
     }
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val bundle = requireActivity().intent.extras
         val email = bundle?.getString("Mail")
+        val user = bundle?.getString("User")
 
         val txtMail = view.findViewById<TextView>(R.id.txtmails)
-        txtMail.text = "Email: $email"
+        val txtuser = view.findViewById<TextView>(R.id.txtNombreUser)
+        txtMail.text = email
+        txtuser.text = user
     }
 
     companion object {
@@ -123,4 +131,18 @@ class productosFragment : Fragment() {
                 }
             }
     }
+
+    override fun onItemClick(producto: Productos, key: String) {
+        val detallesFragment = DetallesProductoFragment.newInstance(producto, key)
+
+        // Reemplazar el contenido del contenedor de fragmentos con el fragmento de detalles del producto
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.container, detallesFragment)
+            .addToBackStack(null)  // Permite volver al fragmento anterior con el botón de atrás
+            .commit()
+    }
+
 }
+
+
+
