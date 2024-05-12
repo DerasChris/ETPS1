@@ -70,7 +70,7 @@
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
+                android:id="@+id/cardHome"
                 android:layout_width="match_parent"
                 android:layout_height="212dp"
                 android:layout_marginStart="25dp"
@@ -128,7 +128,7 @@
                             android:textSize="25sp" />
 
                         <TextView
-                            android:id="@+id/textView2"
+                            android:id="@+id/txtNombreUser"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"

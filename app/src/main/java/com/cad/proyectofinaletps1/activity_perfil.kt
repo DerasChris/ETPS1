@@ -8,10 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.FirebaseApp
-import android.app.Application
 import com.google.firebase.database.*
 import com.google.firebase.database.DatabaseReference
 
@@ -34,7 +31,7 @@ class activity_perfil : AppCompatActivity() {
         }
 
         val textView = findViewById<TextView>(R.id.textView_nombre)
-        val textViewCorreo = findViewById<TextView>(R.id.textView2)
+        val textViewCorreo = findViewById<TextView>(R.id.txtNombreUser)
         val textViewPpto = findViewById<TextView>(R.id.textView8)
         //textView.text = "Sofia"
         databaseReference = FirebaseDatabase.getInstance().reference.child("usuarios").child("usuario_1")
