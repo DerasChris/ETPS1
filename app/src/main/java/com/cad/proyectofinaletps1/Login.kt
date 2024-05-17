@@ -75,7 +75,11 @@ class Login : AppCompatActivity() {
         })
 
         btnLogin.setOnClickListener {
-            if (edtCorreo.text.isNotEmpty() && edtPass.text.isNotEmpty()){
+            // To-Do: Remove this and move it to the nav bar
+            val presupuestosIntent = Intent(this,PresupuestosUsuario::class.java)
+            startActivity(presupuestosIntent)
+
+            /*if (edtCorreo.text.isNotEmpty() && edtPass.text.isNotEmpty()){
                 FirebaseAuth.getInstance().signInWithEmailAndPassword(edtCorreo.text.toString(),
                     edtPass.text.toString()).addOnCompleteListener{
                         if (it.isSuccessful){
@@ -84,7 +88,7 @@ class Login : AppCompatActivity() {
                             ShowAlert("Se ha producido un error al autenticar al usuario")
                         }
                 }
-            }
+            }*/
         }
 
         btnSignUp.setOnClickListener {
