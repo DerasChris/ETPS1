@@ -218,7 +218,7 @@
                                     app:cardCornerRadius="12dp">
 
                                     <TextView
-                                        android:id="@+id/textView38"
+                                        android:id="@+id/textView38xs"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
