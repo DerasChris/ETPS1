@@ -26,9 +26,8 @@ class PresupuestoAdapter(private val items: List<PresupuestoItem>, private val c
         holder.itemTextView.text = item.text
 
         holder.verButton.setOnClickListener {
-            // Navigate to details page for the clicked item
             val intent = Intent(context, ComparativaPresupuesto::class.java)
-            intent.putExtra("nombre", item.text) // Pass data to details activity
+            intent.putExtra("nombre", item.text)
             context.startActivity(intent)
         }
     }

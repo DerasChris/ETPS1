@@ -52,78 +52,7 @@ class ComparativaPresupuesto : AppCompatActivity() {
 
         val presupuestosRef = database.getReference("presupuestos")
         val query = presupuestosRef.orderByChild("nombre").equalTo(nombrePresupuesto)
-/*
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (childSnapshot in snapshot.children) {
-                    val presupuesto = childSnapshot.getValue(Presupuesto::class.java)
-                    if (presupuesto != null) {
-                        txtNombrePresupuesto.text = presupuesto.nombre
-                        txtTotalPresupuesto.text = String.format("%.2f", presupuesto.total)
 
-                        if (presupuesto.productos != null) {
-                            val productosHistorialList = mutableListOf<ProductoHistorialItem>()
-                            for (productoQty in presupuesto.productos) {
-                                Log.d("Productos", productoQty.key)
-
-                                val productosRef = database.getReference("productos").child(productoQty.key)
-
-                                productosRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        val producto = snapshot.getValue(Producto::class.java)
-                                        if (producto != null) {
-                                            Log.d("Producto encontrado", "$producto")
-
-                                            productosHistorialList.add(ProductoHistorialItem(producto.nombre.toString(), productoQty.value, producto.precio as Double))
-                                            productosHistorialList.add(ProductoHistorialItem("Prueba", 2, 2.50))
-
-                                            totalProductosPresupuesto += (producto.precio.times(
-                                                productoQty.value
-                                            ) ?: Double) as Double
-
-                                            val disponible = presupuesto.total?.minus(totalProductosPresupuesto) as Double
-
-                                            var porcentajeUsado = 0.0
-
-                                            porcentajeUsado = if (presupuesto.total > 0) {
-                                                calcularPorcentajeDisponible(totalProductosPresupuesto, disponible)
-                                            } else {
-                                                100.0
-                                            }
-
-
-                                            txtPorcentajeUsado.text = String.format("%.2f", porcentajeUsado)
-                                            txtConsumido.text = "$" + String.format("%.2f", totalProductosPresupuesto)
-                                            txtDisponible.text = "$" + String.format("%.2f", disponible)
-                                        } else {
-                                            Log.d("Not found", "Producto no encontrado")
-                                        }
-                                    }
-
-                                    override fun onCancelled(error: DatabaseError) {
-                                        // Manejar errores
-                                        Log.e("MainActivity", "Error al buscar producto: $error")
-                                    }
-                                })
-                            }
-                            productosHistorialList.add(ProductoHistorialItem("Prueba", 2, 2.50))
-                            val adapter = ProductosHistorialAdapter(productosHistorialList)
-                            recyclerView.adapter = adapter
-                        }
-                    } else {
-                        Log.d(
-                            "Not found", "Presupuesto con nombre $nombrePresupuesto no encontrado"
-                        )
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Handle errors
-                Log.e("MainActivity", "Error al buscar presupuesto: $error")
-            }
-        })
-  */
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (childSnapshot in snapshot.children) {
@@ -197,7 +126,6 @@ class ComparativaPresupuesto : AppCompatActivity() {
     }
 }
 
-// Define a data class to represent a presupuesto
 data class Presupuesto(
     val fecha_creacion: String? = "",
     val mes: String? = "",

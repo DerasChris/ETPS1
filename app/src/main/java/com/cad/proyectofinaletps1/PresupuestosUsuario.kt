@@ -23,7 +23,6 @@ class PresupuestosUsuario : AppCompatActivity(), AdapterView.OnItemSelectedListe
     private var mesSelected: String = "Todos"
 
     override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-        // An item is selected. You can retrieve the selected item using
         mesSelected = parent.getItemAtPosition(pos).toString()
         Log.d("Selected option: ", mesSelected)
 
@@ -67,7 +66,7 @@ class PresupuestosUsuario : AppCompatActivity(), AdapterView.OnItemSelectedListe
 
         val presupuestosList = mutableListOf<PresupuestoItem>()
 
-        // Enviar id del usuario autenticado
+        // To-Do: Enviar id del usuario autenticado
         getPresupuestosByUser("usuario_1") { presupuestos ->
             for (presupuesto in presupuestos) {
                 presupuestosList.add(PresupuestoItem(presupuesto.nombre.toString()))
@@ -107,7 +106,6 @@ class PresupuestosUsuario : AppCompatActivity(), AdapterView.OnItemSelectedListe
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle errors
                 Log.e("MainActivity", "Error al buscar presupuestos: $error")
             }
         })

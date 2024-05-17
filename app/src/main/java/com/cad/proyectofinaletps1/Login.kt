@@ -75,6 +75,7 @@ class Login : AppCompatActivity() {
         })
 
         btnLogin.setOnClickListener {
+            // To-Do: Remove this and move it to the nav bar
             val presupuestosIntent = Intent(this,PresupuestosUsuario::class.java)
             startActivity(presupuestosIntent)
 
