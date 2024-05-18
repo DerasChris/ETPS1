@@ -66,21 +66,17 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/btnadd"
+                <EditText
+                    android:id="@+id/cantidadLlevar"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:backgroundTint="#264653"
-                    android:text="Agregar +1"
-                    app:cornerRadius="6dp"
-                    app:icon="@drawable/bag2"
-                    app:iconSize="20dp" />
+                    android:ems="10"
+                    android:inputType="number" />
 
                 <Button
                     android:id="@+id/btndec"
-                    android:layout_width="wrap_content"
+                    android:layout_width="176dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:layout_weight="1"

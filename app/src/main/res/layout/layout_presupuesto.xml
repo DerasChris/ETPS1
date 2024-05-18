@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
-            android:text="Crear presupuesto"
+            android:text="Crear tablero presupuestal"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="24sp"
@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Nombre de su presupuesto"
+            android:hint="Nombre de tablero"
             android:inputType="text" />
 
         <Button
@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
-            android:text="Seleccionar presupuesto"
+            android:text="Seleccionar tablero"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="24sp"
