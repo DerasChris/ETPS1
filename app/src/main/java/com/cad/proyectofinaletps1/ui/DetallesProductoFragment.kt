@@ -155,7 +155,7 @@ class DetallesProductoFragment : Fragment() {
                             val productoId = key
 
                             if (productoId != null) {
-                                agregarProductoAlPresupuesto(nombrePresupuestoSeleccionado, productoId, cantidad)
+                                agregarProductoAlPresupuesto(nombrePresupuestoSeleccionado, productoId, cantidad, dialog)
                             }
                         } else {
                             userSelection = false
@@ -181,26 +181,48 @@ class DetallesProductoFragment : Fragment() {
         btnCrearPresupuesto.setOnClickListener {
             val nombrePresupuesto = editTextNombrePresupuesto.text.toString().trim()
             if (nombrePresupuesto.isNotEmpty()) {
-                val nuevoPresupuesto = Presupuesto(
-                    nombrePresupuesto,
-                    obtenerFechaActual(),
-                    obtenerNombreMes(),
-                    usuarioId
-                )
-                val nuevoPresupuestoRef = databaseReference.push()
-                nuevoPresupuestoRef.setValue(nuevoPresupuesto)
-                    .addOnSuccessListener {
-                        Toast.makeText(requireContext(), "Tablero creado", Toast.LENGTH_SHORT).show()
-                        Log.d(TAG, "Tablero creado exitosamente")
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e(TAG, "Error al crear el presupuesto", e)
-                    }
+                // Verifica si el usuario ya tiene un tablero con el mismo nombre
+                databaseReference.orderByChild("nombre").equalTo(nombrePresupuesto)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            var nombreDuplicado = false
+                            for (snapshot in dataSnapshot.children) {
+                                val usuarioIdExistente = snapshot.child("usuario_id").getValue(String::class.java)
+                                if (usuarioIdExistente == usuarioId) {
+                                    nombreDuplicado = true
+                                    break
+                                }
+                            }
+                            if (nombreDuplicado) {
+                                Toast.makeText(requireContext(), "Ya existe un tablero con este nombre", Toast.LENGTH_SHORT).show()
+                            } else {
+                                val nuevoPresupuesto = Presupuesto(
+                                    nombrePresupuesto,
+                                    obtenerFechaActual(),
+                                    obtenerNombreMes(),
+                                    usuarioId
+                                )
+                                val nuevoPresupuestoRef = databaseReference.push()
+                                nuevoPresupuestoRef.setValue(nuevoPresupuesto)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(requireContext(), "Tablero creado", Toast.LENGTH_SHORT).show()
+                                        Log.d(TAG, "Tablero creado exitosamente")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e(TAG, "Error al crear el presupuesto", e)
+                                    }
+                            }
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+                        }
+                    })
             }
         }
     }
 
-    private fun agregarProductoAlPresupuesto(nombrePresupuesto: String, productoId: String, cantidad: Int) {
+    private fun agregarProductoAlPresupuesto(nombrePresupuesto: String, productoId: String, cantidad: Int, dialog: Dialog) {
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference()
         databaseReference.child("presupuestos").orderByChild("nombre").equalTo(nombrePresupuesto)
             .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -214,6 +236,7 @@ class DetallesProductoFragment : Fragment() {
                                 nuevoProductoReference.setValue(cantidad)
                                     .addOnSuccessListener {
                                         Toast.makeText(requireContext(), "Producto añadido a $nombrePresupuesto", Toast.LENGTH_SHORT).show()
+                                        dialog.dismiss()  // Close the dialog here
                                     }
                                     .addOnFailureListener { e ->
                                         Log.e(TAG, "Error al agregar el producto al presupuesto", e)

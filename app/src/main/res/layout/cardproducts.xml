@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:gravity="center">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -32,16 +33,23 @@
             <TextView
                 android:id="@+id/txtDesc"
                 android:layout_width="match_parent"
-                android:layout_height="95dp"
+                android:layout_height="62dp"
                 android:layout_marginStart="25dp"
-                android:text="TextView" />
+                android:text="TextView"
+                android:textSize="12sp" />
 
-            <ImageView
-                android:id="@+id/imv"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitCenter"
-                tools:srcCompat="@tools:sample/avatars" />
+                android:layout_height="179dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    tools:srcCompat="@tools:sample/avatars" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -55,16 +63,16 @@
 
                 <TextView
                     android:id="@+id/txtPrecio"
-                    android:layout_width="64dp"
+                    android:layout_width="149dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|left"
                     android:layout_marginStart="25dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:gravity="end"
                     android:text="$ 3.50"
                     android:textAlignment="textStart"
                     android:textColor="#FF9800"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <ImageView
