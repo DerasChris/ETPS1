@@ -231,16 +231,28 @@ class DetallesProductoFragment : Fragment() {
                         for (snapshot in dataSnapshot.children) {
                             val presupuestoKey = snapshot.key
                             if (presupuestoKey != null) {
-                                val nuevoProductoReference = databaseReference.child("presupuestos")
-                                    .child(presupuestoKey).child("productos").child(productoId)
-                                nuevoProductoReference.setValue(cantidad)
-                                    .addOnSuccessListener {
-                                        Toast.makeText(requireContext(), "Producto añadido a $nombrePresupuesto", Toast.LENGTH_SHORT).show()
-                                        dialog.dismiss()  // Close the dialog here
+                                val productosReference = databaseReference.child("presupuestos").child(presupuestoKey).child("productos").child(productoId)
+
+                                productosReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(productSnapshot: DataSnapshot) {
+                                        if (productSnapshot.exists()) {
+                                            Toast.makeText(requireContext(), "El producto ya existe en este tablero", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            productosReference.setValue(cantidad)
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(requireContext(), "Producto añadido a $nombrePresupuesto", Toast.LENGTH_SHORT).show()
+                                                    dialog.dismiss()  // Close the dialog here
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    Log.e(TAG, "Error al agregar el producto al presupuesto", e)
+                                                }
+                                        }
                                     }
-                                    .addOnFailureListener { e ->
-                                        Log.e(TAG, "Error al agregar el producto al presupuesto", e)
+
+                                    override fun onCancelled(databaseError: DatabaseError) {
+                                        Log.e(TAG, "Error de Firebase: ${databaseError.message}")
                                     }
+                                })
                             }
                         }
                     } else {
