@@ -3,8 +3,8 @@
     <string name="default_web_client_id" translatable="false">AIzaSyCf6fsW86mohTbTeczwUVtNbkqicwUIY-4</string>
     <string name="title_activity_main2">MainActivity2</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_dashboard">Escanear</string>
+    <string name="title_notifications">Historial</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>

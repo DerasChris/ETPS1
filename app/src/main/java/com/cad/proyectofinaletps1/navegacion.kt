@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import com.cad.proyectofinaletps1.ui.barcodeFragment
 import com.cad.proyectofinaletps1.ui.productosFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 enum class ProviderType{
@@ -18,6 +19,11 @@ class navegacion : AppCompatActivity() {
         when (item.itemId) {
             R.id.navigation_home -> {
                 val fragment = productosFragment()
+                openFragment(fragment)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_barcode -> {
+                val fragment = barcodeFragment()
                 openFragment(fragment)
                 return@OnNavigationItemSelectedListener true
             }

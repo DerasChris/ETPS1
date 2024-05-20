@@ -5,9 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.cad.proyectofinaletps1.AdaptadorProductos
 import com.cad.proyectofinaletps1.R
 import com.cad.proyectofinaletps1.models.Productos
@@ -105,11 +108,18 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
         val bundle = requireActivity().intent.extras
         val email = bundle?.getString("Mail")
         val user = bundle?.getString("User")
+        val profileURL = bundle?.getString("url")
 
         val txtMail = view.findViewById<TextView>(R.id.txtmails)
         val txtuser = view.findViewById<TextView>(R.id.txtNombreUser)
+        val imgProfile = view.findViewById<ImageView>(R.id.imgProfile)
         txtMail.text = email
         txtuser.text = user
+        Glide.with(this)
+            .load(profileURL)
+            .circleCrop()
+            .apply(RequestOptions().override(150, 150)) // Opcional: ajustar el tamaño de la imagen
+            .into(imgProfile)
     }
 
     companion object {
