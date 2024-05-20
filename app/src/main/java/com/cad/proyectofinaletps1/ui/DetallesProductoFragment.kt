@@ -31,18 +31,10 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [DetallesProductoFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DetallesProductoFragment : Fragment() {
-    // Definir variables para los datos del producto
     private var nombre: String? = null
     private var descripcion: String? = null
     private var precio: Double = 0.0
@@ -53,8 +45,6 @@ class DetallesProductoFragment : Fragment() {
     private var key: String?=null
     private lateinit var imv: ImageView
 
-    private var contProductos: Int = 1;
-
     private var userSelection = false
 
     private val presupuestosList = mutableListOf<String>()
@@ -62,7 +52,6 @@ class DetallesProductoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            // Obtener los datos del producto de los argumentos
             nombre = it.getString("nombre")
             descripcion = it.getString("descripcion")
             precio = it.getDouble("precio")
@@ -71,8 +60,6 @@ class DetallesProductoFragment : Fragment() {
             marca = it.getString("marca")
             categoria = it.getString("categoria")
             key = it.getString("key")
-
-
         }
     }
 
@@ -80,22 +67,18 @@ class DetallesProductoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflar el diseño para este fragmento y mostrar los detalles del producto
         val view = inflater.inflate(R.layout.fragment_detalles_producto, container, false)
-        // Aquí puedes actualizar la interfaz de usuario con los datos del producto
 
         val txtNombreProducto = view.findViewById<TextView>(R.id.txtNombreProd)
         val txtDescripcionProducto = view.findViewById<TextView>(R.id.txtDescriptor)
         val txtPrecioProducto = view.findViewById<TextView>(R.id.txtPrecioProd)
         val txtBarcode = view.findViewById<TextView>(R.id.txtBarcode)
         val txtImg = view.findViewById<ImageView>(R.id.imvProduct)
-        val btnAdd = view.findViewById<Button>(R.id.btnadd)
+        val cantidadLlevar = view.findViewById<EditText>(R.id.cantidadLlevar)
         val btndec = view.findViewById<Button>(R.id.btndec)
-        val btnagregar = view.findViewById<Button>(R.id.btnAgregarapres)
+        val btnAgregar = view.findViewById<Button>(R.id.btnAgregarapres)
         val imv = view.findViewById<ImageView>(R.id.imvss)
 
-
-        // Obtener los datos del producto de los argumentos
         val nombre = arguments?.getString("nombre")
         val descripcion = arguments?.getString("descripcion")
         val precio = arguments?.getDouble("precio")
@@ -105,50 +88,43 @@ class DetallesProductoFragment : Fragment() {
 
         Log.d(TAG, "Clave del producto: $key")
 
-        // Establecer los valores de los TextViews con los detalles del producto
         txtNombreProducto.text = nombre
         txtDescripcionProducto.text = descripcion
-        txtPrecioProducto.text = precio.toString()
+        txtPrecioProducto.text = "$" + precio.toString()
         txtBarcode.text = barcode.toString()
 
         Glide.with(this)
             .load(img)
-            .apply(RequestOptions().override(400, 400)) // Opcional: ajustar el tamaño de la imagen
+            .apply(RequestOptions().override(400, 450))
             .into(txtImg)
 
-
-        btnAdd.setOnClickListener {
-            contProductos++
-            btnAdd.text = "Agregar + ${contProductos.toString()}"
-        }
-
-        btndec.setOnClickListener {
-            if (contProductos>1) {
-                contProductos--
-                btnAdd.text = "Agregar + ${contProductos.toString()}"
+        btnAgregar.setOnClickListener {
+            val cantidad = cantidadLlevar.text.toString().toIntOrNull() ?: 0
+            if (cantidad > 0) {
+                ShowOerlay(cantidad)
+            } else {
+                Toast.makeText(requireContext(), "Por favor, ingrese una cantidad válida", Toast.LENGTH_SHORT).show()
             }
         }
 
-        btnagregar.setOnClickListener {
-            ShowOerlay()
+        btndec.setOnClickListener {
+            val cantidadActual = cantidadLlevar.text.toString().toIntOrNull() ?: 0
+            if (cantidadActual >= 1) {
+                cantidadLlevar.setText((cantidadActual - 1).toString())
+            }
         }
 
-
-
         return view
-
     }
-    private fun ShowOerlay() {
+
+    private fun ShowOerlay(cantidad: Int) {
         val dialog = Dialog(requireActivity())
         dialog.setCancelable(true)
         dialog.setContentView(R.layout.layout_presupuesto)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
         dialog.show()
 
-
         val spinnerPresupuestos = dialog.findViewById<Spinner>(R.id.spnPresupuestos)
-
 
         val usuarioId = "usuario_1"
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("presupuestos")
@@ -164,145 +140,131 @@ class DetallesProductoFragment : Fragment() {
                     nombrePresupuesto?.let { presupuestosList.add(it) }
                 }
 
-
                 val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, presupuestosList)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinnerPresupuestos.adapter = adapter
 
-
-                val nombrePresupuestoPredeterminado = presupuestosList[0] // O el nombre del presupuesto predeterminado que desees
-
-
+                val nombrePresupuestoPredeterminado = presupuestosList[0]
                 val posicionPredeterminada = presupuestosList.indexOf(nombrePresupuestoPredeterminado)
                 spinnerPresupuestos.setSelection(posicionPredeterminada)
 
-
                 spinnerPresupuestos.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        // Verifica si la selección es realizada por el usuario
                         if (userSelection) {
                             val nombrePresupuestoSeleccionado = presupuestosList[position]
-                            val productoId = key     // ID del producto que deseas agregar
-                            val cantidad = contProductos // Cantidad del producto que deseas agregar
-                            Log.d(TAG,"Es $productoId")
-
-                            // Llama a la función para agregar el producto al presupuesto
+                            val productoId = key
 
                             if (productoId != null) {
-                                agregarProductoAlPresupuesto(nombrePresupuestoSeleccionado, productoId, cantidad)
+                                agregarProductoAlPresupuesto(nombrePresupuestoSeleccionado, productoId, cantidad, dialog)
                             }
-
                         } else {
-                            // La selección es automática, no hagas nada
+                            userSelection = false
                         }
-
-                        // Reinicia la bandera para la siguiente selección
-                        userSelection = false
                     }
 
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        // Manejar la situación en la que no se ha seleccionado ningún elemento
-                    }
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+
                 }
 
-// Agrega un listener para detectar cuándo se muestra el overlay
                 spinnerPresupuestos.setOnTouchListener { _, _ ->
-                    // Marca la selección como realizada por el usuario cuando se toca el spinner
                     userSelection = true
                     false
                 }
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Manejar errores de Firebase
-            }
+            override fun onCancelled(databaseError: DatabaseError) {}
         })
-
 
         val editTextNombrePresupuesto = dialog.findViewById<EditText>(R.id.editTextText)
         val btnCrearPresupuesto = dialog.findViewById<Button>(R.id.btnCrearPresupuesto)
 
-
         btnCrearPresupuesto.setOnClickListener {
-
             val nombrePresupuesto = editTextNombrePresupuesto.text.toString().trim()
-
-
             if (nombrePresupuesto.isNotEmpty()) {
+                // Verifica si el usuario ya tiene un tablero con el mismo nombre
+                databaseReference.orderByChild("nombre").equalTo(nombrePresupuesto)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            var nombreDuplicado = false
+                            for (snapshot in dataSnapshot.children) {
+                                val usuarioIdExistente = snapshot.child("usuario_id").getValue(String::class.java)
+                                if (usuarioIdExistente == usuarioId) {
+                                    nombreDuplicado = true
+                                    break
+                                }
+                            }
+                            if (nombreDuplicado) {
+                                Toast.makeText(requireContext(), "Ya existe un tablero con este nombre", Toast.LENGTH_SHORT).show()
+                            } else {
+                                val nuevoPresupuesto = Presupuesto(
+                                    nombrePresupuesto,
+                                    obtenerFechaActual(),
+                                    obtenerNombreMes(),
+                                    usuarioId
+                                )
+                                val nuevoPresupuestoRef = databaseReference.push()
+                                nuevoPresupuestoRef.setValue(nuevoPresupuesto)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(requireContext(), "Tablero creado", Toast.LENGTH_SHORT).show()
+                                        Log.d(TAG, "Tablero creado exitosamente")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e(TAG, "Error al crear el presupuesto", e)
+                                    }
+                            }
+                        }
 
-                val nuevoPresupuesto = Presupuesto(
-                    nombrePresupuesto,
-                    obtenerFechaActual(),
-                    obtenerNombreMes(),
-                    usuarioId
-                )
-
-
-                val nuevoPresupuestoRef = databaseReference.push()
-                nuevoPresupuestoRef.setValue(nuevoPresupuesto)
-                    .addOnSuccessListener {
-
-                        Log.d(TAG, "Presupuesto creado exitosamente")
-
-                    }
-                    .addOnFailureListener { e ->
-
-                        Log.e(TAG, "Error al crear el presupuesto", e)
-
-                    }
-            } else {
-
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+                        }
+                    })
             }
         }
-
-
-
-
-
     }
 
-    private fun agregarProductoAlPresupuesto(nombrePresupuesto: String, productoId: String, cantidad: Int) {
-        // Obtén una referencia al presupuesto seleccionado en la base de datos
+    private fun agregarProductoAlPresupuesto(nombrePresupuesto: String, productoId: String, cantidad: Int, dialog: Dialog) {
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference()
-
-        // Consulta el presupuesto por su nombre para obtener su clave (key)
         databaseReference.child("presupuestos").orderByChild("nombre").equalTo(nombrePresupuesto)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        // Itera sobre los resultados ya que puede haber más de un presupuesto con el mismo nombre
                         for (snapshot in dataSnapshot.children) {
                             val presupuestoKey = snapshot.key
                             if (presupuestoKey != null) {
-                                // Genera un nuevo nodo para el producto en el presupuesto
-                                val nuevoProductoReference = databaseReference.child("presupuestos")
-                                    .child(presupuestoKey).child("productos").child(productoId)
+                                val productosReference = databaseReference.child("presupuestos").child(presupuestoKey).child("productos").child(productoId)
 
-                                // Agrega la cantidad del producto al nodo del presupuesto
-                                nuevoProductoReference.setValue(cantidad)
-                                    .addOnSuccessListener {
-                                        // Maneja el éxito de agregar el producto al presupuesto
-                                        Toast.makeText(requireContext(), "Producto añadido a $nombrePresupuesto", Toast.LENGTH_SHORT).show()
+                                productosReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(productSnapshot: DataSnapshot) {
+                                        if (productSnapshot.exists()) {
+                                            Toast.makeText(requireContext(), "El producto ya existe en este tablero", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            productosReference.setValue(cantidad)
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(requireContext(), "Producto añadido a $nombrePresupuesto", Toast.LENGTH_SHORT).show()
+                                                    dialog.dismiss()  // Close the dialog here
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    Log.e(TAG, "Error al agregar el producto al presupuesto", e)
+                                                }
+                                        }
                                     }
-                                    .addOnFailureListener { e ->
-                                        // Maneja el fallo de agregar el producto al presupuesto
-                                        Log.e(TAG, "Error al agregar el producto al presupuesto", e)
+
+                                    override fun onCancelled(databaseError: DatabaseError) {
+                                        Log.e(TAG, "Error de Firebase: ${databaseError.message}")
                                     }
+                                })
                             }
                         }
                     } else {
-                        // Maneja el caso en el que el presupuesto no existe
                         Log.e(TAG, "El presupuesto no existe")
                     }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    // Maneja los errores de Firebase
                     Log.e(TAG, "Error de Firebase: ${databaseError.message}")
                 }
             })
     }
-
 
     private fun obtenerFechaActual(): String {
         val currentDate = Calendar.getInstance().time
@@ -310,13 +272,11 @@ class DetallesProductoFragment : Fragment() {
         return dateFormat.format(currentDate)
     }
 
-
     private fun obtenerNombreMes(): String {
         val calendar = Calendar.getInstance()
         val month = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())
         return month.toLowerCase(Locale.getDefault())
     }
-
 
     data class Presupuesto(
         val nombre: String,
@@ -325,7 +285,6 @@ class DetallesProductoFragment : Fragment() {
         val usuario_id: String
     )
 
-
     companion object {
         private const val ARG_PRODUCTO = "producto"
         private const val ARG_KEY = "key"
@@ -333,7 +292,6 @@ class DetallesProductoFragment : Fragment() {
         @JvmStatic
         fun newInstance(producto: Productos, key: String) =
             DetallesProductoFragment().apply {
-                // Pasar los datos del producto como argumentos
                 arguments = Bundle().apply {
                     putString("nombre", producto.nombre)
                     putString("descripcion", producto.descripcion)
@@ -342,9 +300,8 @@ class DetallesProductoFragment : Fragment() {
                     producto.barcode?.let { putDouble("barcode", it) }
                     putString("marca", producto.marca)
                     putString("categoria", producto.categoria)
-                    putParcelable(ARG_PRODUCTO,producto)
-                    putString(ARG_KEY,key)
-
+                    putParcelable(ARG_PRODUCTO, producto)
+                    putString(ARG_KEY, key)
                 }
             }
     }

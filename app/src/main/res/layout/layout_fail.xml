@@ -16,23 +16,23 @@
 
         <TextView
             android:id="@+id/txtMessage"
-            android:layout_width="match_parent"
+            android:layout_width="296dp"
             android:layout_height="wrap_content"
             android:text="TextView"
             android:textAlignment="center"
             android:textColor="@color/black"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/imvss"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="368dp"
+            android:layout_height="343dp"
             android:layout_marginTop="50dp"
             app:lottie_autoPlay="true"
-            app:lottie_repeatCount="@integer/material_motion_duration_medium_1"
             app:lottie_loop="true"
-            app:lottie_rawRes="@raw/failed" />
+            app:lottie_rawRes="@raw/failed"
+            app:lottie_repeatCount="@integer/material_motion_duration_medium_1" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
