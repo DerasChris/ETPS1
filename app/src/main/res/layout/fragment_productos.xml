@@ -100,7 +100,7 @@
                             android:padding="15dp">
 
                             <ImageView
-                                android:id="@+id/imageView6"
+                                android:id="@+id/imgProfile"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/eloxir" />

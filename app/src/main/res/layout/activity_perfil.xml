@@ -95,7 +95,7 @@
                         android:padding="15dp">
 
                         <ImageView
-                            android:id="@+id/imageView6"
+                            android:id="@+id/imgProfile"
                             android:layout_width="116dp"
                             android:layout_height="109dp"
                             android:src="@drawable/eloxir" />

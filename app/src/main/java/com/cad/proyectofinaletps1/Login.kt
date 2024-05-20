@@ -1,12 +1,14 @@
 package com.cad.proyectofinaletps1
 
 import android.app.Dialog
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -151,11 +153,12 @@ class Login : AppCompatActivity() {
 
     }
 
-    private fun ShowHome(email: String, provider: ProviderType,user:String){
+    private fun ShowHome(email: String, provider: ProviderType,user:String, urlPhoto: String){
         val homeIntent = Intent(this,navegacion::class.java).apply {
             putExtra("Mail",email)
             putExtra("User",user)
             putExtra("provider",provider.name)
+            putExtra("url",urlPhoto)
         }
         startActivity(homeIntent)
     }
@@ -183,6 +186,9 @@ class Login : AppCompatActivity() {
                             val displayName = user?.displayName
                             val email = user?.email ?: ""
                             val userId = user?.uid ?: ""
+                            val profile = user?.photoUrl ?: ""
+
+                            Log.d(TAG,"LA URL DE LA FOTO ES: $profile")
 
                             // Verificar si el usuario ya está registrado
                             val database = FirebaseDatabase.getInstance()
@@ -193,7 +199,7 @@ class Login : AppCompatActivity() {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     if (snapshot.exists()) {
                                         // El usuario ya está registrado, no es necesario guardar los datos nuevamente
-                                        ShowHome("$email", ProviderType.GOOGLE,"$displayName")
+                                        ShowHome("$email", ProviderType.GOOGLE,"$displayName",profile.toString())
                                     } else {
                                         // El usuario no está registrado, guardar sus datos en la base de datos
                                         val userData = HashMap<String, Any>()
@@ -203,7 +209,7 @@ class Login : AppCompatActivity() {
 
                                         usersRef.child("usuario_$userId").setValue(userData)
 
-                                        ShowHome("$email", ProviderType.GOOGLE,"$displayName")
+                                        ShowHome("$email", ProviderType.GOOGLE)
                                     }
                                 }
 
