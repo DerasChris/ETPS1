@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -28,9 +29,19 @@ class AdaptadorProductos(private val dataList: List<Productos>,private val produ
         val descriptionTextView: TextView = itemView.findViewById(R.id.txtDesc)
         val txtPrecio: TextView = itemView.findViewById(R.id.txtPrecio)
         val txtImg: ImageView = itemView.findViewById(R.id.imv)
+        val cardView: CardView = itemView.findViewById(R.id.crd)
     }
 
+    private lateinit var colors: Array<Int>
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        colors = arrayOf(
+            parent.context.getColor(R.color.greens),
+            parent.context.getColor(R.color.yelowLite),
+            parent.context.getColor(R.color.lila),
+            parent.context.getColor(R.color.rose)
+        )
         val view = LayoutInflater.from(parent.context).inflate(R.layout.cardproducts, parent, false)
         return ViewHolder(view)
     }
@@ -46,6 +57,8 @@ class AdaptadorProductos(private val dataList: List<Productos>,private val produ
             .load(currentItem.imgurl)
             .apply(RequestOptions().override(250, 250))
             .into(holder.txtImg)
+
+        holder.cardView.setCardBackgroundColor(colors[position % colors.size])
 
         holder.itemView.setOnClickListener {
             currentItem.key?.let { key ->
