@@ -13,9 +13,9 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.cad.proyectofinaletps1.ui.dashboard.DashboardFragment"
+        android:name="com.cad.proyectofinaletps1.ui.barcodeFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_barcode" />
 
     <fragment
         android:id="@+id/navigation_notifications"

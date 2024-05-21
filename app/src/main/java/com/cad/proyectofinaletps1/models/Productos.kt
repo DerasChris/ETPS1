@@ -12,9 +12,7 @@ data class Productos(
     val categoria: String?,
     val key: String? = ""
 ) : Parcelable {
-    // Implementar métodos necesarios para Parcelable aquí
 
-    // Constructor primario utilizado por el Parcelable
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
