@@ -2,6 +2,7 @@ package com.cad.proyectofinaletps1
 
 import android.app.Dialog
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -78,10 +79,10 @@ class Login : AppCompatActivity() {
 
         btnLogin.setOnClickListener {
             // To-Do: Remove this and move it to the nav bar
-            val presupuestosIntent = Intent(this,PresupuestosUsuario::class.java)
-            startActivity(presupuestosIntent)
+            /*val presupuestosIntent = Intent(this,PresupuestosUsuario::class.java)
+            startActivity(presupuestosIntent)*/
 
-            /*if (edtCorreo.text.isNotEmpty() && edtPass.text.isNotEmpty()){
+            if (edtCorreo.text.isNotEmpty() && edtPass.text.isNotEmpty()){
                 FirebaseAuth.getInstance().signInWithEmailAndPassword(edtCorreo.text.toString(),
                     edtPass.text.toString()).addOnCompleteListener{
                         if (it.isSuccessful){
@@ -90,7 +91,7 @@ class Login : AppCompatActivity() {
                             ShowAlert("Se ha producido un error al autenticar al usuario")
                         }
                 }
-            }*/
+            }
         }
 
         btnSignUp.setOnClickListener {
@@ -199,7 +200,13 @@ class Login : AppCompatActivity() {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     if (snapshot.exists()) {
                                         // El usuario ya está registrado, no es necesario guardar los datos nuevamente
+                                        // Guardar el UUID en SharedPreferences
+                                        val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                                        val editor = sharedPreferences.edit()
+                                        editor.putString("userUUID", "usuario_$userId")
+                                        editor.apply()
                                         ShowHome("$email", ProviderType.GOOGLE,"$displayName",profile.toString())
+
                                     } else {
                                         // El usuario no está registrado, guardar sus datos en la base de datos
                                         val userData = HashMap<String, Any>()
@@ -208,6 +215,12 @@ class Login : AppCompatActivity() {
                                         userData["uuid"] = userId
 
                                         usersRef.child("usuario_$userId").setValue(userData)
+
+                                        // Guardar el UUID en SharedPreferences
+                                        val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                                        val editor = sharedPreferences.edit()
+                                        editor.putString("userUUID", userId)
+                                        editor.apply()
 
                                         ShowHome("$email", ProviderType.GOOGLE)
                                     }

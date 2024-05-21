@@ -2,6 +2,7 @@ package com.cad.proyectofinaletps1.ui
 
 import android.app.Dialog
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -126,49 +127,57 @@ class DetallesProductoFragment : Fragment() {
 
         val spinnerPresupuestos = dialog.findViewById<Spinner>(R.id.spnPresupuestos)
 
-        val usuarioId = "usuario_1"
+        val sharedPreferences = requireActivity().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val usuarioId = sharedPreferences.getString("userUUID", null) ?: "UUID no encontrado"
+
+        Log.d(TAG,usuarioId)
+
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("presupuestos")
 
         val query = databaseReference.orderByChild("usuario_id").equalTo(usuarioId)
 
         query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val presupuestosList = mutableListOf<String>()
+                if (dataSnapshot.exists()){
+                    val presupuestosList = mutableListOf<String>()
 
-                for (snapshot in dataSnapshot.children) {
-                    val nombrePresupuesto = snapshot.child("nombre").getValue(String::class.java)
-                    nombrePresupuesto?.let { presupuestosList.add(it) }
-                }
-
-                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, presupuestosList)
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinnerPresupuestos.adapter = adapter
-
-                val nombrePresupuestoPredeterminado = presupuestosList[0]
-                val posicionPredeterminada = presupuestosList.indexOf(nombrePresupuestoPredeterminado)
-                spinnerPresupuestos.setSelection(posicionPredeterminada)
-
-                spinnerPresupuestos.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        if (userSelection) {
-                            val nombrePresupuestoSeleccionado = presupuestosList[position]
-                            val productoId = key
-
-                            if (productoId != null) {
-                                agregarProductoAlPresupuesto(nombrePresupuestoSeleccionado, productoId, cantidad, dialog)
-                            }
-                        } else {
-                            userSelection = false
-                        }
+                    for (snapshot in dataSnapshot.children) {
+                        val nombrePresupuesto = snapshot.child("nombre").getValue(String::class.java)
+                        nombrePresupuesto?.let { presupuestosList.add(it) }
                     }
 
-                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                    val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, presupuestosList)
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spinnerPresupuestos.adapter = adapter
 
-                }
+                    val nombrePresupuestoPredeterminado = presupuestosList[0]
+                    val posicionPredeterminada = presupuestosList.indexOf(nombrePresupuestoPredeterminado)
+                    spinnerPresupuestos.setSelection(posicionPredeterminada)
 
-                spinnerPresupuestos.setOnTouchListener { _, _ ->
-                    userSelection = true
-                    false
+                    spinnerPresupuestos.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                            if (userSelection) {
+                                val nombrePresupuestoSeleccionado = presupuestosList[position]
+                                val productoId = key
+
+                                if (productoId != null) {
+                                    agregarProductoAlPresupuesto(nombrePresupuestoSeleccionado, productoId, cantidad, dialog)
+                                }
+                            } else {
+                                userSelection = false
+                            }
+                        }
+
+                        override fun onNothingSelected(parent: AdapterView<*>?) {}
+
+                    }
+
+                    spinnerPresupuestos.setOnTouchListener { _, _ ->
+                        userSelection = true
+                        false
+                    }
+                } else  {
+
                 }
             }
 

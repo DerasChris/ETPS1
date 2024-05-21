@@ -1,5 +1,6 @@
 package com.cad.proyectofinaletps1
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -24,6 +25,11 @@ class navegacion : AppCompatActivity() {
             }
             R.id.navigation_barcode -> {
                 val fragment = barcodeFragment()
+                openFragment(fragment)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_notifications ->{
+                val fragment = PresupuestosUsuarioFragment()
                 openFragment(fragment)
                 return@OnNavigationItemSelectedListener true
             }

@@ -1,72 +1,43 @@
 package com.cad.proyectofinaletps1
 
-import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.*
 
-class PresupuestosUsuario : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class PresupuestosUsuarioFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var database: FirebaseDatabase
     private var mesSelected: String = "Todos"
-    // To-Do: Enviar id del usuario autenticado
 
-
-    override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-        mesSelected = parent.getItemAtPosition(pos).toString()
-        Log.d("Selected option: ", mesSelected)
-
-        val recyclerView: RecyclerView = findViewById(R.id.rvPresupuestos)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        val presupuestosList = mutableListOf<PresupuestoItem>()
-        val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
-        val usuarioId = sharedPreferences.getString("userUUID", null) ?: "UUID no encontrado"
-
-        Log.d(TAG,"$usuarioId")
-
-        getPresupuestosByUser(usuarioId) { presupuestos ->
-            for (presupuesto in presupuestos) {
-                presupuestosList.add(PresupuestoItem(presupuesto.nombre.toString()))
-            }
-
-            val adapterUpdated = PresupuestoAdapter(presupuestosList, this)
-            recyclerView.adapter = adapterUpdated
-        }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_presupuestos_usuario, container, false)
     }
 
-    override fun onNothingSelected(parent: AdapterView<*>) {
-        // Another interface callback.
-    }
-    @SuppressLint("MissingInflatedId")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_presupuestos_usuario)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        val spinnerMeses: Spinner = findViewById(R.id.spnMeses)
+        val spinnerMeses: Spinner = view.findViewById(R.id.spnMeses)
         spinnerMeses.onItemSelectedListener = this
 
-        val recyclerView: RecyclerView = findViewById(R.id.rvPresupuestos)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        val recyclerView: RecyclerView = view.findViewById(R.id.rvPresupuestos)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(view.findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -76,7 +47,7 @@ class PresupuestosUsuario : AppCompatActivity(), AdapterView.OnItemSelectedListe
 
         val presupuestosList = mutableListOf<PresupuestoItem>()
 
-        val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
         val usuarioId = sharedPreferences.getString("userUUID", null) ?: "UUID no encontrado"
 
         getPresupuestosByUser(usuarioId) { presupuestos ->
@@ -84,12 +55,39 @@ class PresupuestosUsuario : AppCompatActivity(), AdapterView.OnItemSelectedListe
                 presupuestosList.add(PresupuestoItem(presupuesto.nombre.toString()))
             }
 
-            val adapter = PresupuestoAdapter(presupuestosList, this)
+            val adapter = PresupuestoAdapter(presupuestosList, requireContext())
             recyclerView.adapter = adapter
         }
     }
 
-    fun getPresupuestosByUser(userBuscado: String, callback: (List<Presupuesto>) -> Unit) {
+    override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+        mesSelected = parent.getItemAtPosition(pos).toString()
+        Log.d("Selected option: ", mesSelected)
+
+        val recyclerView: RecyclerView = view?.findViewById(R.id.rvPresupuestos) ?: return
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        val presupuestosList = mutableListOf<PresupuestoItem>()
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val usuarioId = sharedPreferences.getString("userUUID", null) ?: "UUID no encontrado"
+
+        Log.d(TAG, usuarioId)
+
+        getPresupuestosByUser(usuarioId) { presupuestos ->
+            for (presupuesto in presupuestos) {
+                presupuestosList.add(PresupuestoItem(presupuesto.nombre.toString()))
+            }
+
+            val adapterUpdated = PresupuestoAdapter(presupuestosList, requireContext())
+            recyclerView.adapter = adapterUpdated
+        }
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>) {
+        // Another interface callback.
+    }
+
+    private fun getPresupuestosByUser(userBuscado: String, callback: (List<Presupuesto>) -> Unit) {
         val presupuestosRef = database.getReference("presupuestos")
 
         var query = presupuestosRef.orderByChild("usuario_id").equalTo(userBuscado)
@@ -118,7 +116,7 @@ class PresupuestosUsuario : AppCompatActivity(), AdapterView.OnItemSelectedListe
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e("MainActivity", "Error al buscar presupuestos: $error")
+                Log.e("PresupuestosUsuarioFragment", "Error al buscar presupuestos: $error")
             }
         })
     }

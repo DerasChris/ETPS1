@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Encabezado -->
+    <LinearLayout
+        android:id="@+id/linearLayoutws"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="fill_horizontal"
+        android:orientation="horizontal">
+
+        <!-- Aquí van tus elementos del encabezado (ImageView, TextView, etc.) -->
+
+    </LinearLayout>
+
+    <!-- Contenido principal -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Filtrar por mes -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="25dp">
+
+            <!-- TextView "Filtrar por mes" -->
+            <TextView
+                android:id="@+id/textView21"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Filtrar por mes" />
+
+            <!-- Spinner para seleccionar el mes -->
+            <Spinner
+                android:id="@+id/spnMeses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:entries="@array/planets_array" />
+        </LinearLayout>
+
+        <!-- RecyclerView para mostrar los presupuestos -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPresupuestos"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</LinearLayout>

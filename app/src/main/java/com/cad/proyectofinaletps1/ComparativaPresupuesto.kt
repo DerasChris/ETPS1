@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.database.*
-import com.google.firebase.database.DatabaseReference
 import kotlin.time.times
 
 class ComparativaPresupuesto : AppCompatActivity() {
@@ -53,7 +52,7 @@ class ComparativaPresupuesto : AppCompatActivity() {
         val presupuestosRef = database.getReference("presupuestos")
         val query = presupuestosRef.orderByChild("nombre").equalTo(nombrePresupuesto)
 
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
+        query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (childSnapshot in snapshot.children) {
                     val presupuesto = childSnapshot.getValue(Presupuesto::class.java)
