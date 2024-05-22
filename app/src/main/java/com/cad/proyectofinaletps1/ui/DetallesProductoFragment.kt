@@ -126,6 +126,8 @@ class DetallesProductoFragment : Fragment() {
         dialog.show()
 
         val spinnerPresupuestos = dialog.findViewById<Spinner>(R.id.spnPresupuestos)
+        val txtNoTableros = dialog.findViewById<TextView>(R.id.txtNoTableros)
+        val txtSeleccionarTablero = dialog.findViewById<TextView>(R.id.textView2)
 
         val sharedPreferences = requireActivity().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
         val usuarioId = sharedPreferences.getString("userUUID", null) ?: "UUID no encontrado"
@@ -138,7 +140,7 @@ class DetallesProductoFragment : Fragment() {
 
         query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     val presupuestosList = mutableListOf<String>()
 
                     for (snapshot in dataSnapshot.children) {
@@ -176,8 +178,14 @@ class DetallesProductoFragment : Fragment() {
                         userSelection = true
                         false
                     }
-                } else  {
 
+                    txtSeleccionarTablero.visibility = View.VISIBLE
+                    txtNoTableros.visibility = View.GONE
+                    spinnerPresupuestos.visibility = View.VISIBLE
+                } else {
+                    txtSeleccionarTablero.visibility = View.GONE
+                    txtNoTableros.visibility = View.VISIBLE
+                    spinnerPresupuestos.visibility = View.GONE
                 }
             }
 
@@ -253,7 +261,7 @@ class DetallesProductoFragment : Fragment() {
                                                     dialog.dismiss()  // Close the dialog here
                                                 }
                                                 .addOnFailureListener { e ->
-                                                    Log.e(TAG, "Error al agregar el producto al presupuesto", e)
+                                                    Log.e(TAG, "Error al agregar el producto al tablero", e)
                                                 }
                                         }
                                     }
@@ -265,7 +273,7 @@ class DetallesProductoFragment : Fragment() {
                             }
                         }
                     } else {
-                        Log.e(TAG, "El presupuesto no existe")
+                        Log.e(TAG, "El tablero no existe")
                     }
                 }
 
