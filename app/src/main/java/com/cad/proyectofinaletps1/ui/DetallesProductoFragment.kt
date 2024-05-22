@@ -83,7 +83,7 @@ class DetallesProductoFragment : Fragment() {
         val nombre = arguments?.getString("nombre")
         val descripcion = arguments?.getString("descripcion")
         val precio = arguments?.getDouble("precio")
-        val barcode = arguments?.getDouble("barcode")
+        val barcode = arguments?.getLong("barcode")
         val img = arguments?.getString("imgurl")
         val key = arguments?.getString(ARG_KEY)
 
@@ -306,7 +306,7 @@ class DetallesProductoFragment : Fragment() {
                     putString("descripcion", producto.descripcion)
                     producto.precio?.let { putDouble("precio", it) }
                     putString("imgurl", producto.imgurl)
-                    producto.barcode?.let { putDouble("barcode", it) }
+                    producto.barcode?.let { putLong("barcode", it) }
                     putString("marca", producto.marca)
                     putString("categoria", producto.categoria)
                     putParcelable(ARG_PRODUCTO, producto)

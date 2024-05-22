@@ -97,7 +97,7 @@ class barcodeFragment : Fragment() {
                 val database = FirebaseDatabase.getInstance()
                 val ref = database.getReference("productos")
 
-                ref.orderByChild("barcode").equalTo(barcode)
+                ref.orderByChild("barcode").equalTo(barcode.toDouble())
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             linearlayo?.visibility = View.VISIBLE

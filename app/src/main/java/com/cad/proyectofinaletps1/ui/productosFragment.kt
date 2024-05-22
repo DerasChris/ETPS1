@@ -75,7 +75,7 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
                     val descripcion = snapshot.child("descripcion").getValue(String::class.java)
                     val precio = snapshot.child("precio").getValue(Double::class.java)
                     val img = snapshot.child("filepath").getValue(String::class.java)
-                    val barcode = snapshot.child("barcode").getValue(Double::class.java)
+                    val barcode = snapshot.child("barcode").getValue(Long::class.java)
                     val categoria = snapshot.child("categoria").getValue(String::class.java)
                     val marca = snapshot.child("marca").getValue(String::class.java)
 
