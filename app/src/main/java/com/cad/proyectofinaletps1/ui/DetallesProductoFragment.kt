@@ -253,7 +253,7 @@ class DetallesProductoFragment : Fragment() {
                                                     dialog.dismiss()  // Close the dialog here
                                                 }
                                                 .addOnFailureListener { e ->
-                                                    Log.e(TAG, "Error al agregar el producto al presupuesto", e)
+                                                    Log.e(TAG, "Error al agregar el producto al tablero", e)
                                                 }
                                         }
                                     }
@@ -265,7 +265,7 @@ class DetallesProductoFragment : Fragment() {
                             }
                         }
                     } else {
-                        Log.e(TAG, "El presupuesto no existe")
+                        Log.e(TAG, "El tablero no existe")
                     }
                 }
 
