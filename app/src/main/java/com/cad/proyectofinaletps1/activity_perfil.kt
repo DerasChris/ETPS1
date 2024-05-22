@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+
 import com.google.firebase.database.*
 
 class activity_perfil : AppCompatActivity() {
@@ -30,9 +31,11 @@ class activity_perfil : AppCompatActivity() {
         }
 
         val textView = findViewById<TextView>(R.id.textView_nombre)
+
         val textViewCorreo = findViewById<TextView>(R.id.textView2)
         editTextPpto = findViewById<EditText>(R.id.editTextPpto)
         buttonActualizar = findViewById<Button>(R.id.button2)
+
 
         firebaseAuth = FirebaseAuth.getInstance()
         val currentUser: FirebaseUser? = firebaseAuth.currentUser
