@@ -12,7 +12,6 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-
         <TextView
             android:id="@+id/txtMessage"
             android:layout_width="match_parent"
@@ -49,13 +48,26 @@
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/txtNoTableros"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:text="No posees tableros, crea uno nuevo"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:visibility="gone" />
 
         <Spinner
             android:id="@+id/spnPresupuestos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="15dp" />
+            android:padding="15dp"
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
