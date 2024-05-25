@@ -6,4 +6,8 @@
     </style>
 
     <style name="Theme.PROYECTOFINALETPS1" parent="Base.Theme.PROYECTOFINALETPS1" />
+
+    <style name="RoundedCornersDialog" parent="@style/Theme.MaterialComponents.Dialog">
+        <item name="dialogCornerRadius">16dp</item>
+    </style>
 </resources>

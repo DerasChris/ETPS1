@@ -70,7 +70,7 @@
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
+                android:id="@+id/cardHome"
                 android:layout_width="match_parent"
                 android:layout_height="212dp"
                 android:layout_marginStart="25dp"
@@ -95,7 +95,7 @@
                         android:padding="15dp">
 
                         <ImageView
-                            android:id="@+id/imageView6"
+                            android:id="@+id/imgProfile"
                             android:layout_width="116dp"
                             android:layout_height="109dp"
                             android:src="@drawable/eloxir" />
@@ -128,7 +128,7 @@
                             android:textSize="25sp" />
 
                         <TextView
-                            android:id="@+id/textView2"
+                            android:id="@+id/txtNombreUser"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
@@ -182,15 +182,16 @@
                                 android:gravity="center_horizontal|center_vertical"
                                 android:orientation="vertical">
 
-                                <TextView
-                                    android:id="@+id/textView8"
+                                <EditText
+                                    android:id="@+id/editTextPpto"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="$ 1,125.00"
                                     android:textAlignment="center"
                                     android:textColor="#E76351"
                                     android:textSize="24sp"
-                                    android:textStyle="bold" />
+                                    android:textStyle="bold"
+                                    android:inputType="numberDecimal" />
                             </LinearLayout>
 
                         </androidx.cardview.widget.CardView>

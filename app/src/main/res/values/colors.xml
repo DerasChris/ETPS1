@@ -6,8 +6,13 @@
     <color name="orangeLite">#FADEC7</color>
     <color name="skyblueLite">#BAF1EB</color>
     <color name="yelowLite">#FEFFE6</color>
+    <color name="greens">#E6FFED</color>
+     <color name="lila">#E6EBFF</color>
+    <color name="rose">#FFE6FB</color>
     <color name="brownLite">#FFF2E6</color>
     <color name="skyblueGradient">#E1FFFC</color>
+    <color name="color1">#BAF1EB</color> <!-- Color rojo claro -->
+    <color name="color2">#FFF2E6</color> <!-- Color verde claro -->
 
 
 </resources>

@@ -70,7 +70,7 @@
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
+                android:id="@+id/cardHome"
                 android:layout_width="match_parent"
                 android:layout_height="190dp"
                 android:layout_marginStart="25dp"
@@ -95,7 +95,7 @@
                         android:padding="15dp">
 
                         <ImageView
-                            android:id="@+id/imageView6"
+                            android:id="@+id/imgProfile"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:src="@drawable/eloxir" />
@@ -145,7 +145,7 @@
                             android:textSize="25sp" />
 
                         <TextView
-                            android:id="@+id/textView2"
+                            android:id="@+id/txtNombreUser"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
@@ -317,6 +317,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:text="Hogar" />
 
                 <TextView
@@ -331,6 +333,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:text="Bebidas" />
 
@@ -338,7 +341,6 @@
                     android:id="@+id/textView17"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:text="Mascotas" />
 
@@ -347,7 +349,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Bellezas" />
+                    android:layout_marginLeft="10dp"
+                    android:text="Belleza" />
             </LinearLayout>
 
             <LinearLayout
@@ -378,7 +381,7 @@
                             app:srcCompat="@drawable/img" />
 
                         <TextView
-                            android:id="@+id/textView22"
+                            android:id="@+id/txtNombre"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="25dp"
@@ -398,7 +401,7 @@
                             android:padding="0dp">
 
                             <TextView
-                                android:id="@+id/textView26"
+                                android:id="@+id/txtPrecio"
                                 android:layout_width="64dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="25dp"
