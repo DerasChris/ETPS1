@@ -77,7 +77,8 @@ class DetallesProductoFragment : Fragment() {
         val txtImg = view.findViewById<ImageView>(R.id.imvProduct)
         val cantidadLlevar = view.findViewById<EditText>(R.id.cantidadLlevar)
         val btndec = view.findViewById<Button>(R.id.btndec)
-        val btnAgregar = view.findViewById<Button>(R.id.btnAgregarapres)
+        val btnAgregarapres = view.findViewById<Button>(R.id.btnAgregarapres)
+        val btnAnadirATablero = view.findViewById<Button>(R.id.btnAnadirATablero)
         val imv = view.findViewById<ImageView>(R.id.imvss)
 
         val nombre = arguments?.getString("nombre")
@@ -99,7 +100,7 @@ class DetallesProductoFragment : Fragment() {
             .apply(RequestOptions().override(400, 450))
             .into(txtImg)
 
-        btnAgregar.setOnClickListener {
+        btnAnadirATablero.setOnClickListener {
             val cantidad = cantidadLlevar.text.toString().toIntOrNull() ?: 0
             if (cantidad > 0) {
                 ShowOerlay(cantidad)
@@ -108,9 +109,14 @@ class DetallesProductoFragment : Fragment() {
             }
         }
 
+        btnAgregarapres.setOnClickListener {
+            val cantidadActual = cantidadLlevar.text.toString().toIntOrNull() ?: 0
+            cantidadLlevar.setText((cantidadActual + 1).toString())
+        }
+
         btndec.setOnClickListener {
             val cantidadActual = cantidadLlevar.text.toString().toIntOrNull() ?: 0
-            if (cantidadActual >= 1) {
+            if (cantidadActual >= 2) {
                 cantidadLlevar.setText((cantidadActual - 1).toString())
             }
         }
