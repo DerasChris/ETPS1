@@ -83,7 +83,7 @@ class DetallesProductoFragment : Fragment() {
 
         val nombre = arguments?.getString("nombre")
         val descripcion = arguments?.getString("descripcion")
-        val precio = arguments?.getDouble("precio")
+        var precio: Double = 0.0
         val barcode = arguments?.getDouble("barcode")
         val img = arguments?.getString("imgurl")
         val key = arguments?.getString(ARG_KEY)
@@ -121,7 +121,32 @@ class DetallesProductoFragment : Fragment() {
             }
         }
 
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("productos").child(key ?: "")
+        databaseReference.child("precio").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val precioNuevo = dataSnapshot.getValue(Double::class.java) ?: 0.0
+                if (precio != precioNuevo) {
+                    actualizarTextoPrecio(precio, precioNuevo)
+                    precio = precioNuevo
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+            }
+        })
+
         return view
+    }
+
+    // Función para actualizar el texto de txtPrecioProd
+    private fun actualizarTextoPrecio(precioAnterior: Double, precioNuevo: Double) {
+        val textoPrecio = view?.findViewById<TextView>(R.id.txtPrecioProd)
+        if (precioAnterior != 0.0 && precioAnterior != precioNuevo) {
+            textoPrecio?.text = "Antes: $$precioAnterior | Ahora: $$precioNuevo"
+        } else {
+            textoPrecio?.text = "$$precioNuevo"
+        }
     }
 
     private fun ShowOerlay(cantidad: Int) {
