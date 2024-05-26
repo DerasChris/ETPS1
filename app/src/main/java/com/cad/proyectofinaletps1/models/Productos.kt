@@ -7,7 +7,7 @@ data class Productos(
     val descripcion: String?,
     val precio: Double?,
     val imgurl: String?,
-    val barcode: Double?,
+    val barcode: Long? = null,
     val marca: String?,
     val categoria: String?,
     val key: String? = ""
@@ -18,7 +18,7 @@ data class Productos(
         parcel.readString(),
         parcel.readValue(Double::class.java.classLoader) as? Double,
         parcel.readString(),
-        parcel.readValue(Double::class.java.classLoader) as? Double,
+        parcel.readValue(Long::class.java.classLoader) as? Long,
         parcel.readString(),
         parcel.readString()
     )

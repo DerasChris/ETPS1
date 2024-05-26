@@ -345,7 +345,7 @@ class DetallesProductoFragment : Fragment() {
                     putString("descripcion", producto.descripcion)
                     producto.precio?.let { putDouble("precio", it) }
                     putString("imgurl", producto.imgurl)
-                    producto.barcode?.let { putDouble("barcode", it) }
+                    producto.barcode?.let { putLong("barcode", it) }
                     putString("marca", producto.marca)
                     putString("categoria", producto.categoria)
                     putParcelable(ARG_PRODUCTO, producto)

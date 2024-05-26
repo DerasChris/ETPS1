@@ -117,11 +117,17 @@ class Login : AppCompatActivity() {
             // Crear cliente de inicio de sesión de Google
             val googleClient = GoogleSignIn.getClient(this, googleConf)
 
+
             googleClient.signOut()
 
             // Iniciar sesión de Google
             val signInIntent = googleClient.signInIntent
             startActivityForResult(signInIntent, GOOGLE_SIGN_IN)
+
+            val googleClient = GoogleSignIn.getClient(this,googleConf)
+            googleClient.signOut()
+            startActivityForResult(googleClient.signInIntent,GOOGLE_SIGN_IN)
+
         }
 
     }
