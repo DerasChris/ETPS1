@@ -77,13 +77,14 @@ class DetallesProductoFragment : Fragment() {
         val txtImg = view.findViewById<ImageView>(R.id.imvProduct)
         val cantidadLlevar = view.findViewById<EditText>(R.id.cantidadLlevar)
         val btndec = view.findViewById<Button>(R.id.btndec)
-        val btnAgregar = view.findViewById<Button>(R.id.btnAgregarapres)
+        val btnAgregarapres = view.findViewById<Button>(R.id.btnAgregarapres)
+        val btnAnadirATablero = view.findViewById<Button>(R.id.btnAnadirATablero)
         val imv = view.findViewById<ImageView>(R.id.imvss)
 
         val nombre = arguments?.getString("nombre")
         val descripcion = arguments?.getString("descripcion")
-        val precio = arguments?.getDouble("precio")
-        val barcode = arguments?.getLong("barcode")
+        var precio: Double = 0.0
+        val barcode = arguments?.getDouble("barcode")
         val img = arguments?.getString("imgurl")
         val key = arguments?.getString(ARG_KEY)
 
@@ -99,7 +100,7 @@ class DetallesProductoFragment : Fragment() {
             .apply(RequestOptions().override(400, 450))
             .into(txtImg)
 
-        btnAgregar.setOnClickListener {
+        btnAnadirATablero.setOnClickListener {
             val cantidad = cantidadLlevar.text.toString().toIntOrNull() ?: 0
             if (cantidad > 0) {
                 ShowOerlay(cantidad)
@@ -108,14 +109,44 @@ class DetallesProductoFragment : Fragment() {
             }
         }
 
+        btnAgregarapres.setOnClickListener {
+            val cantidadActual = cantidadLlevar.text.toString().toIntOrNull() ?: 0
+            cantidadLlevar.setText((cantidadActual + 1).toString())
+        }
+
         btndec.setOnClickListener {
             val cantidadActual = cantidadLlevar.text.toString().toIntOrNull() ?: 0
-            if (cantidadActual >= 1) {
+            if (cantidadActual >= 2) {
                 cantidadLlevar.setText((cantidadActual - 1).toString())
             }
         }
 
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("productos").child(key ?: "")
+        databaseReference.child("precio").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val precioNuevo = dataSnapshot.getValue(Double::class.java) ?: 0.0
+                if (precio != precioNuevo) {
+                    actualizarTextoPrecio(precio, precioNuevo)
+                    precio = precioNuevo
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+            }
+        })
+
         return view
+    }
+
+    // Función para actualizar el texto de txtPrecioProd
+    private fun actualizarTextoPrecio(precioAnterior: Double, precioNuevo: Double) {
+        val textoPrecio = view?.findViewById<TextView>(R.id.txtPrecioProd)
+        if (precioAnterior != 0.0 && precioAnterior != precioNuevo) {
+            textoPrecio?.text = "Antes: $$precioAnterior | Ahora: $$precioNuevo"
+        } else {
+            textoPrecio?.text = "$$precioNuevo"
+        }
     }
 
     private fun ShowOerlay(cantidad: Int) {
