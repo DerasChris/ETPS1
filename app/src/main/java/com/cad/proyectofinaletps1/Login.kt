@@ -124,9 +124,7 @@ class Login : AppCompatActivity() {
             val signInIntent = googleClient.signInIntent
             startActivityForResult(signInIntent, GOOGLE_SIGN_IN)
 
-            val googleClient = GoogleSignIn.getClient(this,googleConf)
-            googleClient.signOut()
-            startActivityForResult(googleClient.signInIntent,GOOGLE_SIGN_IN)
+
 
         }
 

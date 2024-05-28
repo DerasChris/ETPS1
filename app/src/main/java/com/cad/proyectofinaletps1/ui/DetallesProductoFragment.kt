@@ -40,7 +40,7 @@ class DetallesProductoFragment : Fragment() {
     private var descripcion: String? = null
     private var precio: Double = 0.0
     private var imgurl: String? = null
-    private var barcode: Double = 0.0
+    private var barcode: String? = null
     private var marca: String? = null
     private var categoria: String? = null
     private var key: String?=null
@@ -57,11 +57,13 @@ class DetallesProductoFragment : Fragment() {
             descripcion = it.getString("descripcion")
             precio = it.getDouble("precio")
             imgurl = it.getString("imgurl")
-            barcode = it.getDouble("barcode")
+            barcode = it.getString(ARG_BARCODE).toString()
             marca = it.getString("marca")
             categoria = it.getString("categoria")
-            key = it.getString("key")
+            key = it.getString(ARG_KEY).toString()
         }
+
+
     }
 
     override fun onCreateView(
@@ -81,24 +83,7 @@ class DetallesProductoFragment : Fragment() {
         val btnAnadirATablero = view.findViewById<Button>(R.id.btnAnadirATablero)
         val imv = view.findViewById<ImageView>(R.id.imvss)
 
-        val nombre = arguments?.getString("nombre")
-        val descripcion = arguments?.getString("descripcion")
-        var precio: Double = 0.0
-        val barcode = arguments?.getDouble("barcode")
-        val img = arguments?.getString("imgurl")
-        val key = arguments?.getString(ARG_KEY)
 
-        Log.d(TAG, "Clave del producto: $key")
-
-        txtNombreProducto.text = nombre
-        txtDescripcionProducto.text = descripcion
-        txtPrecioProducto.text = "$" + precio.toString()
-        txtBarcode.text = barcode.toString()
-
-        Glide.with(this)
-            .load(img)
-            .apply(RequestOptions().override(400, 450))
-            .into(txtImg)
 
         btnAnadirATablero.setOnClickListener {
             val cantidad = cantidadLlevar.text.toString().toIntOrNull() ?: 0
@@ -125,6 +110,7 @@ class DetallesProductoFragment : Fragment() {
         databaseReference.child("precio").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val precioNuevo = dataSnapshot.getValue(Double::class.java) ?: 0.0
+                Log.d(TAG,"$precioNuevo")
                 if (precio != precioNuevo) {
                     actualizarTextoPrecio(precio, precioNuevo)
                     precio = precioNuevo
@@ -135,6 +121,38 @@ class DetallesProductoFragment : Fragment() {
                 Log.e(TAG, "Error de Firebase: ${databaseError.message}")
             }
         })
+
+        val databaseReference2: DatabaseReference = FirebaseDatabase.getInstance().getReference("productos")
+        databaseReference2.orderByChild("barcode").equalTo(barcode)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (snapshot in dataSnapshot.children) {
+                            val producto = snapshot.getValue(Productos::class.java)
+                            Log.d(TAG, "Producto: $producto")
+                            producto?.let {
+                                txtNombreProducto.text = it.nombre
+                                txtDescripcionProducto.text = it.descripcion
+                                txtPrecioProducto.text = "$${it.precio}"
+                                txtBarcode.text = it.barcode.toString()
+                                Log.d(TAG, "Cargando imagen desde URL: ${it.imgurl}")
+                                Glide.with(this@DetallesProductoFragment)
+                                    .load(snapshot.child("filepath").getValue(String::class.java))
+                                    .apply(RequestOptions().override(400, 450))
+                                    .into(txtImg)
+                            }
+                        }
+                    } else {
+                        Log.e(TAG, "Producto no encontrado")
+                        Log.e(TAG, "Producto no encontrado ${barcode}")
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+                }
+            })
+
 
         return view
     }
@@ -192,7 +210,6 @@ class DetallesProductoFragment : Fragment() {
                             if (userSelection) {
                                 val nombrePresupuestoSeleccionado = presupuestosList[position]
                                 val productoId = key
-
                                 if (productoId != null) {
                                     agregarProductoAlPresupuesto(nombrePresupuestoSeleccionado, productoId, cantidad, dialog)
                                 }
@@ -334,23 +351,16 @@ class DetallesProductoFragment : Fragment() {
     )
 
     companion object {
-        private const val ARG_PRODUCTO = "producto"
+        private const val ARG_BARCODE = "barcode"
         private const val ARG_KEY = "key"
-
         @JvmStatic
-        fun newInstance(producto: Productos, key: String) =
+        fun newInstance(barcode: String, key: String?) =
             DetallesProductoFragment().apply {
                 arguments = Bundle().apply {
-                    putString("nombre", producto.nombre)
-                    putString("descripcion", producto.descripcion)
-                    producto.precio?.let { putDouble("precio", it) }
-                    putString("imgurl", producto.imgurl)
-                    producto.barcode?.let { putLong("barcode", it) }
-                    putString("marca", producto.marca)
-                    putString("categoria", producto.categoria)
-                    putParcelable(ARG_PRODUCTO, producto)
+                    putString(ARG_BARCODE, barcode)
                     putString(ARG_KEY, key)
                 }
             }
     }
+
 }

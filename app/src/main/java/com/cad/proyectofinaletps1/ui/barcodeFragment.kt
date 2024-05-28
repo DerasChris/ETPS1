@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -42,6 +43,9 @@ class barcodeFragment : Fragment() {
     private var _binding: FragmentBarcodeBinding? = null
     private val binding get() = _binding!!
 
+    private var scannedBarcode: String? = null
+    private var productKey: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +53,8 @@ class barcodeFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+
 
     }
 
@@ -62,8 +68,22 @@ class barcodeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         binding.btnScan.setOnClickListener { initScanner() }
+
+        binding.btnRed.setOnClickListener {
+            if (scannedBarcode != null && productKey != null) {
+                val detallesFragment = DetallesProductoFragment.newInstance(scannedBarcode!!, productKey!!)
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, detallesFragment)
+                    .addToBackStack(null)
+                    .commit()
+            } else {
+                Toast.makeText(requireContext(), "No se ha escaneado ningún producto", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -83,8 +103,9 @@ class barcodeFragment : Fragment() {
 
         val txtscan = view?.findViewById<TextView>(R.id.txtBarcode)
         val linearlayo = view?.findViewById<LinearLayout>(R.id.linearProd)
-        val txtNom = view?.findViewById<TextView>(R.id.txtNombreProd)
-        val txtPrecio = view?.findViewById<TextView>(R.id.txtPrecio)
+        val txtNom = view?.findViewById<TextView>(R.id.txtNprod)
+        val txtDesc = view?.findViewById<TextView>(R.id.txtDescrip)
+        val txtprice = view?.findViewById<TextView>(R.id.txtPreciop)
         val imvProd = view?.findViewById<ImageView>(R.id.imvSProd)
 
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
@@ -92,37 +113,36 @@ class barcodeFragment : Fragment() {
             if (result.contents.isNullOrEmpty()) {
                 Toast.makeText(requireContext(), "Cancelado", Toast.LENGTH_LONG).show()
             } else {
-                val barcode = result.contents
+                scannedBarcode = result.contents
 
                 val database = FirebaseDatabase.getInstance()
                 val ref = database.getReference("productos")
 
-                ref.orderByChild("barcode").equalTo(barcode.toDouble())
+                ref.orderByChild("barcode").equalTo(scannedBarcode)
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             linearlayo?.visibility = View.VISIBLE
 
                             if (dataSnapshot.exists()) {
-                                for (snapshot in dataSnapshot.children) {
-                                    val producto = snapshot.getValue(Productos::class.java)
-
-                                    txtNom?.text = producto?.nombre ?: "Producto no encontrado"
-                                    txtPrecio?.text = producto?.precio?.toString() ?: "-"
-                                    imvProd?.let {
-                                        producto?.imgurl?.let { url ->
+                                for (productSnapshot in dataSnapshot.children) {
+                                    if (productSnapshot.child("barcode").getValue(String::class.java) == scannedBarcode) {
+                                        val producto = productSnapshot.getValue(Productos::class.java)
+                                        productKey = productSnapshot.key
+                                        // Actualiza la interfaz de usuario con los datos del producto encontrado
+                                        txtNom?.text = "Producto: " + (producto?.nombre ?: "Producto no encontrado")
+                                        txtprice?.text = "Precio: $" + (producto?.precio?.toString() ?: "-")
+                                        txtscan?.text = "Código de Barras: $scannedBarcode"
+                                        imvProd?.let {
                                             Glide.with(requireContext())
-                                                .load(url)
-                                                .apply(RequestOptions().override(50, 50))
+                                                .load(productSnapshot.child("filepath").getValue(String::class.java))
                                                 .into(it)
                                         }
+
+                                        return  // Termina la ejecución después de encontrar el producto
                                     }
                                 }
                             } else {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Producto no encontrado",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                Toast.makeText(requireContext(), "Producto no encontrado", Toast.LENGTH_LONG).show()
                             }
                         }
 
@@ -132,8 +152,8 @@ class barcodeFragment : Fragment() {
                     })
             }
         }
-
     }
+
 
     companion object {
         /**

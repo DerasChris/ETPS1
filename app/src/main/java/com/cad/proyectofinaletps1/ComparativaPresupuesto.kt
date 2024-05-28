@@ -1,5 +1,7 @@
 package com.cad.proyectofinaletps1
 
+import android.content.ContentValues.TAG
+import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
@@ -36,6 +38,7 @@ class ComparativaPresupuesto : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        Log.d(TAG, "acá truena")
 
         val nombrePresupuesto = intent.getStringExtra("nombre")
 
@@ -135,7 +138,7 @@ data class Presupuesto(
 )
 
 data class Producto(
-    val barcode: Long? = 0,
+    val barcode: String? = "",
     val categoria: String? = "",
     val descripcion: String? = "",
     val filepath: String? = "",
