@@ -1,10 +1,12 @@
 package com.cad.proyectofinaletps1.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
@@ -13,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.cad.proyectofinaletps1.AdaptadorProductos
 import com.cad.proyectofinaletps1.R
+import com.cad.proyectofinaletps1.activity_perfil
 import com.cad.proyectofinaletps1.models.Productos
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -62,6 +65,13 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
         val dataList: MutableList<Productos> = mutableListOf()
         val productKeys: MutableList<String> = mutableListOf()
 
+        val btnperf = view.findViewById<Button>(R.id.btnperfil)
+
+        btnperf.setOnClickListener {
+            val intent = Intent(context, activity_perfil::class.java)
+            startActivity(intent)
+        }
+
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 dataList.clear()
@@ -75,7 +85,7 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
                     val descripcion = snapshot.child("descripcion").getValue(String::class.java)
                     val precio = snapshot.child("precio").getValue(Double::class.java)
                     val img = snapshot.child("filepath").getValue(String::class.java)
-                    val barcode = snapshot.child("barcode").getValue(Long::class.java)
+                    val barcode = snapshot.child("barcode").getValue(String::class.java)
                     val categoria = snapshot.child("categoria").getValue(String::class.java)
                     val marca = snapshot.child("marca").getValue(String::class.java)
 
@@ -143,13 +153,16 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
     }
 
     override fun onItemClick(producto: Productos, key: String) {
-        val detallesFragment = DetallesProductoFragment.newInstance(producto, key)
+        val detallesFragment =
+            producto.barcode?.let { DetallesProductoFragment.newInstance(it,producto.key) }
 
         // Reemplazar el contenido del contenedor de fragmentos con el fragmento de detalles del producto
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.container, detallesFragment)
-            .addToBackStack(null)  // Permite volver al fragmento anterior con el botón de atrás
-            .commit()
+        detallesFragment?.let {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.container, it)
+                .addToBackStack(null)  // Permite volver al fragmento anterior con el botón de atrás
+                .commit()
+        }
     }
 
 }

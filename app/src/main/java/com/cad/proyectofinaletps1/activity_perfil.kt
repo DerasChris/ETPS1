@@ -1,6 +1,10 @@
 package com.cad.proyectofinaletps1
 
+import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Button
@@ -36,16 +40,16 @@ class activity_perfil : AppCompatActivity() {
         editTextPpto = findViewById<EditText>(R.id.editTextPpto)
         buttonActualizar = findViewById<Button>(R.id.button2)
 
+        val sharedPreferences: SharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val UsuarioActual = sharedPreferences.getString("userUUID", "valor predeterminado")
 
-        firebaseAuth = FirebaseAuth.getInstance()
-        val currentUser: FirebaseUser? = firebaseAuth.currentUser
 
-        if (currentUser != null) {
-            val userId = currentUser.uid
+        UsuarioActual?.let { Log.d(TAG, it) }
+        if (UsuarioActual != null) {
             databaseReference = FirebaseDatabase.getInstance().reference
 
             // Obtener datos del usuario logueado
-            databaseReference.child("usuarios").child(userId).addValueEventListener(object : ValueEventListener {
+            databaseReference.child("usuarios").child(UsuarioActual).addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val nombre = dataSnapshot.child("nombre").getValue(String::class.java)
                     textView.text = nombre
@@ -58,27 +62,7 @@ class activity_perfil : AppCompatActivity() {
                 }
             })
 
-            // Obtener presupuesto del usuario logueado
-            databaseReference.child("presupuestos").child(userId).addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val total = dataSnapshot.child("total").getValue(Double::class.java)
-                    editTextPpto.setText(total.toString())
-                }
 
-                override fun onCancelled(databaseError: DatabaseError) {
-                    // Manejar el error
-                }
-            })
-
-            // Guardar el nuevo presupuesto
-            buttonActualizar.setOnClickListener {
-                val nuevoTotal = editTextPpto.text.toString().toDoubleOrNull()
-                if (nuevoTotal != null) {
-                    databaseReference.child("presupuestos").child(userId).child("total").setValue(nuevoTotal)
-                } else {
-                    // Manejar el caso en que la entrada no sea un número válido
-                }
-            }
         } else {
             // El usuario no está logueado
         }
