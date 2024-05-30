@@ -1,6 +1,8 @@
 package com.cad.proyectofinaletps1
 
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.SharedPreferences
 import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
@@ -22,7 +24,7 @@ class ComparativaPresupuesto : AppCompatActivity() {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var databaseReference: DatabaseReference
     private lateinit var database: FirebaseDatabase
-
+    private var montox: Double = 0.0;
     private var presupuestoEncontrado: Presupuesto? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +50,36 @@ class ComparativaPresupuesto : AppCompatActivity() {
         val txtDisponible = findViewById<TextView>(R.id.txtDisponible)
         val txtPorcentajeUsado = findViewById<TextView>(R.id.txtPorcentajeUsado)
 
+        // Obtén la referencia a la base de datos de Firebase
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("monto")
+
+        // Obtén el ID del usuario actual
+        val usuarioId = FirebaseAuth.getInstance().currentUser?.uid
+
+        // Verifica que el ID del usuario no sea nulo antes de realizar la consulta
+        usuarioId?.let { uid ->
+            // Realiza la consulta en la base de datos de Firebase para obtener el monto correspondiente al usuario actual
+            databaseReference.child(uid).addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    // Verifica si existe un monto para el usuario actual
+                    if (dataSnapshot.exists()) {
+                        // Obtén el monto desde el dataSnapshot
+                        val monto = dataSnapshot.child("montopresupuestal").getValue(Double::class.java)
+                        if (monto != null) {
+                            montox = monto
+                        }
+                    } else {
+                        // Si no existe un monto para el usuario actual, muestra un mensaje alternativo o realiza alguna acción
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // Maneja los errores de la base de datos
+                    Log.e(TAG, "Error al obtener el monto del usuario: ${databaseError.message}")
+                }
+            })
+        }
+
         var totalProductosPresupuesto = 0.0
 
         database = FirebaseDatabase.getInstance()
@@ -61,7 +93,7 @@ class ComparativaPresupuesto : AppCompatActivity() {
                     val presupuesto = childSnapshot.getValue(Presupuesto::class.java)
                     if (presupuesto != null) {
                         txtNombrePresupuesto.text = presupuesto.nombre
-                        txtTotalPresupuesto.text = String.format("%.2f", presupuesto.total)
+                        txtTotalPresupuesto.text = montox.toString()
 
                         if (presupuesto.productos != null) {
                             val productosHistorialList = mutableListOf<ProductoHistorialItem>()
@@ -85,9 +117,9 @@ class ComparativaPresupuesto : AppCompatActivity() {
 
                                             totalProductosPresupuesto += producto.precio * productoQty.value
 
-                                            val disponible = presupuesto.total?.minus(totalProductosPresupuesto) ?: 0.0
-                                            val porcentajeUsado = if (presupuesto.total!! > 0) {
-                                                calcularPorcentajeDisponible(totalProductosPresupuesto, presupuesto.total)
+                                            val disponible = montox?.minus(totalProductosPresupuesto) ?: 0.0
+                                            val porcentajeUsado = if (montox > 0) {
+                                                calcularPorcentajeDisponible(totalProductosPresupuesto, montox)
                                             } else {
                                                 100.0
                                             }

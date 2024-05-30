@@ -208,6 +208,9 @@ class Login : AppCompatActivity() {
                                         val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
                                         val editor = sharedPreferences.edit()
                                         editor.putString("userUUID", "usuario_$userId")
+                                        editor.putString("email", email)
+                                        editor.putString("name", displayName)
+                                        editor.putString("profile", profile.toString())
                                         editor.apply()
                                         ShowHome("$email", ProviderType.GOOGLE,"$displayName",profile.toString())
 
