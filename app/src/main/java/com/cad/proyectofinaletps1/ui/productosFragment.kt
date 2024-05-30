@@ -28,16 +28,9 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [productosFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -116,8 +109,6 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
         return view
     }
 
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -160,7 +151,7 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
 
                         // Muestra el monto en el TextView correspondiente
 
-                        txtMonto.text = "$ $monto"
+                        txtMonto.text = "$%.2f".format(monto)
 
                     } else {
                         // todos
@@ -194,16 +185,14 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
                     if (totalConsumido > monto) {
                         val red = ContextCompat.getColor(requireContext(), R.color.red)
                         txtTotalConsumido.setTextColor(red)
-                        txtTotalConsumido.text = "$-%.2f".format(totalConsumido)
-                        textaviso.setText("Te has excedido de tu presupuesto! ${monto-totalConsumido}")
+                        txtTotalConsumido.text = "$%.2f".format(totalConsumido)
+                        val diferencia = kotlin.math.abs(totalConsumido - monto)
+                        textaviso.text = "Has excedido tu presupuesto por: $%.2f".format(diferencia)
                         textaviso?.visibility = View.VISIBLE
                     } else {
-                        // Opción: restaurar el color original si el totalConsumido no supera el monto
-                        val originalColor = ContextCompat.getColor(requireContext(), R.color.black) // Cambia R.color.originalColor por el color original de tu TextView
-                        txtTotalConsumido.setTextColor(originalColor)
+                        val black = ContextCompat.getColor(requireContext(), R.color.black)
+                        txtTotalConsumido.setTextColor(black)
                         txtTotalConsumido.text = "$%.2f".format(totalConsumido)
-                        textaviso?.visibility = View.INVISIBLE
-
                     }
                 }
 
@@ -217,15 +206,6 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment productosFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             productosFragment().apply {
@@ -250,6 +230,3 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
     }
 
 }
-
-
-
