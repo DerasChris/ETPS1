@@ -1,7 +1,10 @@
 package com.cad.proyectofinaletps1.ui
 
+import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +20,7 @@ import com.cad.proyectofinaletps1.AdaptadorProductos
 import com.cad.proyectofinaletps1.R
 import com.cad.proyectofinaletps1.activity_perfil
 import com.cad.proyectofinaletps1.models.Productos
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -52,6 +56,7 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_productos, container, false)
+
 
         // Encontrar RecyclerView en el diseño del fragmento
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
@@ -115,14 +120,18 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         val bundle = requireActivity().intent.extras
         val email = bundle?.getString("Mail")
         val user = bundle?.getString("User")
         val profileURL = bundle?.getString("url")
 
         val txtMail = view.findViewById<TextView>(R.id.txtmails)
-        val txtuser = view.findViewById<TextView>(R.id.txtNombreUser)
-        val imgProfile = view.findViewById<ImageView>(R.id.imgProfile)
+        val txtuser = view.findViewById<TextView>(R.id.tvCorreo)
+        val imgProfile = view.findViewById<ImageView>(R.id.imgProfileP)
+        val txtMonto = view.findViewById<TextView>(R.id.txtMontoPres)
+
+
         txtMail.text = email
         txtuser.text = user
         Glide.with(this)
@@ -130,6 +139,38 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
             .circleCrop()
             .apply(RequestOptions().override(150, 150)) // Opcional: ajustar el tamaño de la imagen
             .into(imgProfile)
+
+        // Obtén la referencia a la base de datos de Firebase
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("monto")
+
+        // Obtén el ID del usuario actual
+        val usuarioId = FirebaseAuth.getInstance().currentUser?.uid
+
+        // Verifica que el ID del usuario no sea nulo antes de realizar la consulta
+        usuarioId?.let { uid ->
+            // Realiza la consulta en la base de datos de Firebase para obtener el monto correspondiente al usuario actual
+            databaseReference.child(uid).addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    // Verifica si existe un monto para el usuario actual
+                    if (dataSnapshot.exists()) {
+                        // Obtén el monto desde el dataSnapshot
+                        val monto = dataSnapshot.child("montopresupuestal").getValue(Double::class.java)
+
+                        // Muestra el monto en el TextView correspondiente
+                        val txtMonto = view.findViewById<TextView>(R.id.txtMontoPres)
+                        txtMonto.text = "$ ${monto.toString()}"
+
+                    } else {
+                        // Si no existe un monto para el usuario actual, muestra un mensaje alternativo o realiza alguna acción
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // Maneja los errores de la base de datos
+                    Log.e(TAG, "Error al obtener el monto del usuario: ${databaseError.message}")
+                }
+            })
+        }
     }
 
     companion object {

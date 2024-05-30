@@ -100,7 +100,7 @@
                             android:padding="15dp">
 
                             <ImageView
-                                android:id="@+id/imgProfile"
+                                android:id="@+id/imgProfileP"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/eloxir" />
@@ -133,7 +133,7 @@
                             android:padding="10dp">
 
                             <TextView
-                                android:id="@+id/textView_nombre"
+                                android:id="@+id/tv_nombre"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Bienvenido a tienda el ahorro"
@@ -142,7 +142,7 @@
                                 android:textSize="25sp" />
 
                             <TextView
-                                android:id="@+id/txtNombreUser"
+                                android:id="@+id/tvCorreo"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="20dp"
@@ -206,7 +206,7 @@
                                     android:orientation="vertical">
 
                                     <TextView
-                                        android:id="@+id/textView8"
+                                        android:id="@+id/txtMontoPres"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="$ 1,125.00"
