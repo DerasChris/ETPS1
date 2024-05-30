@@ -87,6 +87,12 @@ class Login : AppCompatActivity() {
                     edtPass.text.toString()).addOnCompleteListener{
                         if (it.isSuccessful){
                             ShowHome(it.result?.user?.email ?:"", ProviderType.BASIC)
+                            val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                            val editor = sharedPreferences.edit()
+                            val uuid = it.result?.user?.uid ?:""
+                            editor.putString("userUUID", "usuario_$uuid")
+                            editor.putString("email", it.result?.user?.email ?:"")
+                            editor.apply()
                         }else{
                             ShowAlert("Se ha producido un error al autenticar al usuario")
                         }
@@ -223,10 +229,13 @@ class Login : AppCompatActivity() {
 
                                         usersRef.child("usuario_$userId").setValue(userData)
 
-                                        // Guardar el UUID en SharedPreferences
                                         val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
                                         val editor = sharedPreferences.edit()
-                                        editor.putString("userUUID", userId)
+                                        editor.putString("userUUID", "usuario_$userId")
+                                        editor.putString("email", email)
+                                        editor.putString("name", displayName)
+                                        editor.putString("profile", profile.toString())
+                                        editor.apply()
                                         editor.apply()
 
                                         ShowHome("$email", ProviderType.GOOGLE)

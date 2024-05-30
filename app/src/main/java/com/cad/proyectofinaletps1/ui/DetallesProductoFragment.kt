@@ -191,6 +191,7 @@ class DetallesProductoFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     val presupuestosList = mutableListOf<String>()
+                    presupuestosList.add("Seleccione el tablero")
 
                     for (snapshot in dataSnapshot.children) {
                         val nombrePresupuesto = snapshot.child("nombre").getValue(String::class.java)
@@ -207,19 +208,17 @@ class DetallesProductoFragment : Fragment() {
 
                     spinnerPresupuestos.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                            if (userSelection) {
+                            if (position > 0) { // Evita la primera opción "Seleccione el tablero"
                                 val nombrePresupuestoSeleccionado = presupuestosList[position]
-                                val productoId = key
+                                val productoId = key // Asegúrate de que 'key' esté definido y accesible en este contexto
+                                Log.d(TAG,"La key ess: $key")
                                 if (productoId != null) {
                                     agregarProductoAlPresupuesto(nombrePresupuestoSeleccionado, productoId, cantidad, dialog)
                                 }
-                            } else {
-                                userSelection = false
                             }
                         }
 
                         override fun onNothingSelected(parent: AdapterView<*>?) {}
-
                     }
 
                     spinnerPresupuestos.setOnTouchListener { _, _ ->
@@ -289,47 +288,84 @@ class DetallesProductoFragment : Fragment() {
 
     private fun agregarProductoAlPresupuesto(nombrePresupuesto: String, productoId: String, cantidad: Int, dialog: Dialog) {
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference()
-        databaseReference.child("presupuestos").orderByChild("nombre").equalTo(nombrePresupuesto)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        for (snapshot in dataSnapshot.children) {
-                            val presupuestoKey = snapshot.key
-                            if (presupuestoKey != null) {
-                                val productosReference = databaseReference.child("presupuestos").child(presupuestoKey).child("productos").child(productoId)
+        val productoReference = databaseReference.child("productos").child(productoId)
 
-                                productosReference.addListenerForSingleValueEvent(object : ValueEventListener {
-                                    override fun onDataChange(productSnapshot: DataSnapshot) {
-                                        if (productSnapshot.exists()) {
-                                            Toast.makeText(requireContext(), "El producto ya existe en este tablero", Toast.LENGTH_SHORT).show()
-                                        } else {
-                                            productosReference.setValue(cantidad)
-                                                .addOnSuccessListener {
-                                                    Toast.makeText(requireContext(), "Producto añadido a $nombrePresupuesto", Toast.LENGTH_SHORT).show()
-                                                    dialog.dismiss()  // Close the dialog here
+        productoReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(productoSnapshot: DataSnapshot) {
+                if (productoSnapshot.exists()) {
+                    val precio = productoSnapshot.child("precio").getValue(Double::class.java) ?: 0.0
+                    val totalNuevoProducto = precio * cantidad
+
+                    databaseReference.child("presupuestos").orderByChild("nombre").equalTo(nombrePresupuesto)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    for (snapshot in dataSnapshot.children) {
+                                        val presupuestoKey = snapshot.key
+                                        if (presupuestoKey != null) {
+                                            val productosReference = databaseReference.child("presupuestos").child(presupuestoKey).child("productos").child(productoId)
+                                            val totalReference = databaseReference.child("presupuestos").child(presupuestoKey).child("total")
+
+                                            productosReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                                                override fun onDataChange(productSnapshot: DataSnapshot) {
+                                                    if (productSnapshot.exists()) {
+                                                        Toast.makeText(requireContext(), "El producto ya existe en este tablero", Toast.LENGTH_SHORT).show()
+                                                    } else {
+                                                        productosReference.setValue(cantidad)
+                                                            .addOnSuccessListener {
+                                                                // Actualizar el total del presupuesto
+                                                                totalReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                                                                    override fun onDataChange(totalSnapshot: DataSnapshot) {
+                                                                        var totalActual = totalSnapshot.getValue(Double::class.java) ?: 0.0
+                                                                        totalActual += totalNuevoProducto
+                                                                        val totalFormateado = String.format("%.2f", totalActual).toDouble()
+                                                                        totalReference.setValue(totalFormateado)
+                                                                            .addOnSuccessListener {
+                                                                                Toast.makeText(requireContext(), "Producto añadido a $nombrePresupuesto", Toast.LENGTH_SHORT).show()
+                                                                                dialog.dismiss()  // Close the dialog here
+                                                                            }
+                                                                            .addOnFailureListener { e ->
+                                                                                Log.e(TAG, "Error al actualizar el total del tablero", e)
+                                                                            }
+                                                                    }
+
+                                                                    override fun onCancelled(databaseError: DatabaseError) {
+                                                                        Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+                                                                    }
+                                                                })
+                                                            }
+                                                            .addOnFailureListener { e ->
+                                                                Log.e(TAG, "Error al agregar el producto al tablero", e)
+                                                            }
+                                                    }
                                                 }
-                                                .addOnFailureListener { e ->
-                                                    Log.e(TAG, "Error al agregar el producto al tablero", e)
+
+                                                override fun onCancelled(databaseError: DatabaseError) {
+                                                    Log.e(TAG, "Error de Firebase: ${databaseError.message}")
                                                 }
+                                            })
                                         }
                                     }
-
-                                    override fun onCancelled(databaseError: DatabaseError) {
-                                        Log.e(TAG, "Error de Firebase: ${databaseError.message}")
-                                    }
-                                })
+                                } else {
+                                    Log.e(TAG, "El tablero no existe")
+                                }
                             }
-                        }
-                    } else {
-                        Log.e(TAG, "El tablero no existe")
-                    }
-                }
 
-                override fun onCancelled(databaseError: DatabaseError) {
-                    Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+                            override fun onCancelled(databaseError: DatabaseError) {
+                                Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+                            }
+                        })
+                } else {
+                    Log.e(TAG, "El producto no existe")
                 }
-            })
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+            }
+        })
     }
+
 
     private fun obtenerFechaActual(): String {
         val currentDate = Calendar.getInstance().time

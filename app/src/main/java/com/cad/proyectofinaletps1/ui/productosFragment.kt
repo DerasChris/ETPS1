@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -129,7 +130,7 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
         val txtMail = view.findViewById<TextView>(R.id.txtmails)
         val txtuser = view.findViewById<TextView>(R.id.tvCorreo)
         val imgProfile = view.findViewById<ImageView>(R.id.imgProfileP)
-        val txtMonto = view.findViewById<TextView>(R.id.txtMontoPres)
+
 
 
         txtMail.text = email
@@ -140,11 +141,12 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
             .apply(RequestOptions().override(150, 150)) // Opcional: ajustar el tamaño de la imagen
             .into(imgProfile)
 
-        // Obtén la referencia a la base de datos de Firebase
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("monto")
-
-        // Obtén el ID del usuario actual
+        val txtMonto = view.findViewById<TextView>(R.id.txtMontoPres)
+        var monto: Double = 0.0
+        //  ID del usuario actual
         val usuarioId = FirebaseAuth.getInstance().currentUser?.uid
+
 
         // Verifica que el ID del usuario no sea nulo antes de realizar la consulta
         usuarioId?.let { uid ->
@@ -154,14 +156,14 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
                     // Verifica si existe un monto para el usuario actual
                     if (dataSnapshot.exists()) {
                         // Obtén el monto desde el dataSnapshot
-                        val monto = dataSnapshot.child("montopresupuestal").getValue(Double::class.java)
+                        monto = dataSnapshot.child("montopresupuestal").getValue(Double::class.java)!!
 
                         // Muestra el monto en el TextView correspondiente
-                        val txtMonto = view.findViewById<TextView>(R.id.txtMontoPres)
-                        txtMonto.text = "$ ${monto.toString()}"
+
+                        txtMonto.text = "$ $monto"
 
                     } else {
-                        // Si no existe un monto para el usuario actual, muestra un mensaje alternativo o realiza alguna acción
+                        // todos
                     }
                 }
 
@@ -171,6 +173,47 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
                 }
             })
         }
+
+        // Obtener el total de todos los presupuestos del usuario actual
+        val presupuestosReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("presupuestos")
+        val txtTotalConsumido = view.findViewById<TextView>(R.id.txtTotalConsumidoP)
+        val textaviso = view.findViewById<TextView>(R.id.txtAviso)
+
+
+
+        usuarioId?.let { uid ->
+            presupuestosReference.orderByChild("usuario_id").equalTo("usuario_"+uid).addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    Log.d(TAG,"El us: $uid")
+                    var totalConsumido = 0.0
+                    for (snapshot in dataSnapshot.children) {
+                        val total = snapshot.child("total").getValue(Double::class.java) ?: 0.0
+                        totalConsumido += total
+                    }
+
+                    if (totalConsumido > monto) {
+                        val red = ContextCompat.getColor(requireContext(), R.color.red)
+                        txtTotalConsumido.setTextColor(red)
+                        txtTotalConsumido.text = "$-%.2f".format(totalConsumido)
+                        textaviso.setText("Te has excedido de tu presupuesto! ${monto-totalConsumido}")
+                        textaviso?.visibility = View.VISIBLE
+                    } else {
+                        // Opción: restaurar el color original si el totalConsumido no supera el monto
+                        val originalColor = ContextCompat.getColor(requireContext(), R.color.black) // Cambia R.color.originalColor por el color original de tu TextView
+                        txtTotalConsumido.setTextColor(originalColor)
+                        txtTotalConsumido.text = "$%.2f".format(totalConsumido)
+                        textaviso?.visibility = View.INVISIBLE
+
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e(TAG, "Error al obtener los presupuestos del usuario: ${databaseError.message}")
+                }
+            })
+
+    }
+
     }
 
     companion object {
