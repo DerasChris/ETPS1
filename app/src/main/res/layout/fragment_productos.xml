@@ -209,9 +209,9 @@
                                         android:id="@+id/txtMontoPres"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="$ 1,125.00"
+                                        android:text="$ 0.00"
                                         android:textAlignment="center"
-                                        android:textColor="#E76351"
+                                        android:textColor="#000000"
                                         android:textSize="24sp"
                                         android:textStyle="bold" />
                                 </LinearLayout>
@@ -255,18 +255,35 @@
                                     android:orientation="vertical">
 
                                     <TextView
-                                        android:id="@+id/textView9"
+                                        android:id="@+id/txtTotalConsumidoP"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:text="$ 356.00"
+                                        android:text="$ 0.00"
                                         android:textAlignment="center"
-                                        android:textColor="#E76351"
+                                        android:textColor="#000000"
                                         android:textSize="24sp"
                                         android:textStyle="bold" />
                                 </LinearLayout>
                             </androidx.cardview.widget.CardView>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtAviso"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        android:textAlignment="center"
+                        android:textColor="#DC0C0C"
+                        android:layout_marginBottom="5dp"
+                        android:visibility="invisible" />
                 </LinearLayout>
 
                 <LinearLayout

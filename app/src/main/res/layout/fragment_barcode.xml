@@ -176,7 +176,6 @@
                                 android:layout_height="wrap_content"
                                 android:paddingLeft="25dp"
                                 android:paddingTop="5dp"
-                                android:text="Bolsa de comida gato adulto"
                                 android:textColor="@color/white"
                                 android:textStyle="bold" />
 

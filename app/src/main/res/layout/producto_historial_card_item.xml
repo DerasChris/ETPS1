@@ -10,6 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="horizontal"
         android:padding="10dp">
 
@@ -24,19 +25,26 @@
 
         <TextView
             android:id="@+id/txtCantidadProductoHistorial"
-            android:layout_width="wrap_content"
+            android:layout_width="45dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="TextView"
-            android:textAlignment="textEnd" />
+            android:textAlignment="viewStart" />
 
         <TextView
             android:id="@+id/txtPrecioProductoHistorial"
-            android:layout_width="wrap_content"
+            android:layout_width="45dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="TextView"
-            android:textAlignment="textEnd" />
+            android:text="TextView" />
+
+        <ImageButton
+            android:id="@+id/btn_eliminar"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:background="#004A3333"
+            android:src="@android:drawable/ic_delete"
+            app:icon="@android:drawable/ic_delete" />
 
     </LinearLayout>
 

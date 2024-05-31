@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -27,16 +28,9 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [productosFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -115,8 +109,6 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
         return view
     }
 
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -129,7 +121,7 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
         val txtMail = view.findViewById<TextView>(R.id.txtmails)
         val txtuser = view.findViewById<TextView>(R.id.tvCorreo)
         val imgProfile = view.findViewById<ImageView>(R.id.imgProfileP)
-        val txtMonto = view.findViewById<TextView>(R.id.txtMontoPres)
+
 
 
         txtMail.text = email
@@ -140,11 +132,12 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
             .apply(RequestOptions().override(150, 150)) // Opcional: ajustar el tamaño de la imagen
             .into(imgProfile)
 
-        // Obtén la referencia a la base de datos de Firebase
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("monto")
-
-        // Obtén el ID del usuario actual
+        val txtMonto = view.findViewById<TextView>(R.id.txtMontoPres)
+        var monto: Double = 0.0
+        //  ID del usuario actual
         val usuarioId = FirebaseAuth.getInstance().currentUser?.uid
+
 
         // Verifica que el ID del usuario no sea nulo antes de realizar la consulta
         usuarioId?.let { uid ->
@@ -154,14 +147,14 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
                     // Verifica si existe un monto para el usuario actual
                     if (dataSnapshot.exists()) {
                         // Obtén el monto desde el dataSnapshot
-                        val monto = dataSnapshot.child("montopresupuestal").getValue(Double::class.java)
+                        monto = dataSnapshot.child("montopresupuestal").getValue(Double::class.java)!!
 
                         // Muestra el monto en el TextView correspondiente
-                        val txtMonto = view.findViewById<TextView>(R.id.txtMontoPres)
-                        txtMonto.text = "$ ${monto.toString()}"
+
+                        txtMonto.text = "$%.2f".format(monto)
 
                     } else {
-                        // Si no existe un monto para el usuario actual, muestra un mensaje alternativo o realiza alguna acción
+                        // todos
                     }
                 }
 
@@ -171,18 +164,50 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
                 }
             })
         }
+
+        // Obtener el total de todos los presupuestos del usuario actual
+        val presupuestosReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("presupuestos")
+        val txtTotalConsumido = view.findViewById<TextView>(R.id.txtTotalConsumidoP)
+        val textaviso = view.findViewById<TextView>(R.id.txtAviso)
+
+
+
+        usuarioId?.let { uid ->
+            presupuestosReference.orderByChild("usuario_id").equalTo("usuario_"+uid).addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    Log.d(TAG,"El us: $uid")
+                    var totalConsumido = 0.0
+                    for (snapshot in dataSnapshot.children) {
+                        val total = snapshot.child("total").getValue(Double::class.java) ?: 0.0
+                        totalConsumido += total
+                    }
+
+                    if (isAdded) {
+                        if (totalConsumido > monto) {
+                            val red = ContextCompat.getColor(requireContext(), R.color.red)
+                            txtTotalConsumido.setTextColor(red)
+                            txtTotalConsumido.text = "$%.2f".format(totalConsumido)
+                            val diferencia = kotlin.math.abs(totalConsumido - monto)
+                            textaviso.text = "Has excedido tu presupuesto por: $%.2f".format(diferencia)
+                            textaviso.visibility = View.VISIBLE
+                        } else {
+                            val black = ContextCompat.getColor(requireContext(), R.color.black)
+                            txtTotalConsumido.setTextColor(black)
+                            txtTotalConsumido.text = "$%.2f".format(totalConsumido)
+                        }
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e(TAG, "Error al obtener los presupuestos del usuario: ${databaseError.message}")
+                }
+            })
+
+    }
+
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment productosFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             productosFragment().apply {
@@ -207,6 +232,3 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
     }
 
 }
-
-
-
