@@ -121,9 +121,10 @@ class barcodeFragment : Fragment() {
                 ref.orderByChild("barcode").equalTo(scannedBarcode)
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            linearlayo?.visibility = View.VISIBLE
+
 
                             if (dataSnapshot.exists()) {
+                                linearlayo?.visibility = View.VISIBLE
                                 for (productSnapshot in dataSnapshot.children) {
                                     if (productSnapshot.child("barcode").getValue(String::class.java) == scannedBarcode) {
                                         val producto = productSnapshot.getValue(Productos::class.java)
