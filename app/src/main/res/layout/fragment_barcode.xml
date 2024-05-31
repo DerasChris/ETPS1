@@ -123,7 +123,7 @@
             <LinearLayout
                 android:id="@+id/linearProd"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="25dp"
                 android:visibility="invisible"
@@ -151,6 +151,7 @@
                                 android:id="@+id/imvSProd"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal|center_vertical"
                                 app:srcCompat="@drawable/img_1" />
                         </androidx.cardview.widget.CardView>
 
@@ -170,12 +171,21 @@
                                 android:textStyle="bold" />
 
                             <TextView
-                                android:id="@+id/txtPrecios"
+                                android:id="@+id/txtDescrip"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:paddingLeft="25dp"
                                 android:paddingTop="5dp"
-                                android:text="Bolsa de comida gato adulto"
+                                android:textColor="@color/white"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/txtPreciop"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="25dp"
+                                android:paddingTop="5dp"
+                                android:text="TextView"
                                 android:textColor="@color/white"
                                 android:textStyle="bold" />
 
@@ -187,6 +197,18 @@
                                 android:overScrollMode="ifContentScrolls">
 
                             </LinearLayout>
+
+                            <Button
+                                android:id="@+id/btnRed"
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="10dp"
+                                android:backgroundTint="@color/orangeLite"
+                                android:gravity="center"
+                                android:text="Añadir al presupuesto"
+                                android:textColor="#000000"
+                                app:cornerRadius="5dp" />
 
                         </LinearLayout>
 

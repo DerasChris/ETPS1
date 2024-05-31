@@ -7,18 +7,19 @@ data class Productos(
     val descripcion: String?,
     val precio: Double?,
     val imgurl: String?,
-    val barcode: Long? = null,
+    val barcode: String? = null,
     val marca: String?,
     val categoria: String?,
     val key: String? = ""
 ) : Parcelable {
+
 
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
         parcel.readValue(Double::class.java.classLoader) as? Double,
         parcel.readString(),
-        parcel.readValue(Long::class.java.classLoader) as? Long,
+        parcel.readValue(String::class.java.classLoader) as? String,
         parcel.readString(),
         parcel.readString()
     )
@@ -46,4 +47,15 @@ data class Productos(
             return arrayOfNulls(size)
         }
     }
+
+    constructor() : this(
+        nombre = null,
+        descripcion = null,
+        precio = 0.0,
+        imgurl = null,
+        barcode = null,
+        marca = null,
+        categoria = null,
+        key = null
+    )
 }

@@ -40,7 +40,7 @@ class DetallesProductoFragment : Fragment() {
     private var descripcion: String? = null
     private var precio: Double = 0.0
     private var imgurl: String? = null
-    private var barcode: Double = 0.0
+    private var barcode: String? = null
     private var marca: String? = null
     private var categoria: String? = null
     private var key: String?=null
@@ -57,11 +57,13 @@ class DetallesProductoFragment : Fragment() {
             descripcion = it.getString("descripcion")
             precio = it.getDouble("precio")
             imgurl = it.getString("imgurl")
-            barcode = it.getDouble("barcode")
+            barcode = it.getString(ARG_BARCODE).toString()
             marca = it.getString("marca")
             categoria = it.getString("categoria")
-            key = it.getString("key")
+            key = it.getString(ARG_KEY).toString()
         }
+
+
     }
 
     override fun onCreateView(
@@ -77,29 +79,13 @@ class DetallesProductoFragment : Fragment() {
         val txtImg = view.findViewById<ImageView>(R.id.imvProduct)
         val cantidadLlevar = view.findViewById<EditText>(R.id.cantidadLlevar)
         val btndec = view.findViewById<Button>(R.id.btndec)
-        val btnAgregar = view.findViewById<Button>(R.id.btnAgregarapres)
+        val btnAgregarapres = view.findViewById<Button>(R.id.btnAgregarapres)
+        val btnAnadirATablero = view.findViewById<Button>(R.id.btnAnadirATablero)
         val imv = view.findViewById<ImageView>(R.id.imvss)
 
-        val nombre = arguments?.getString("nombre")
-        val descripcion = arguments?.getString("descripcion")
-        val precio = arguments?.getDouble("precio")
-        val barcode = arguments?.getLong("barcode")
-        val img = arguments?.getString("imgurl")
-        val key = arguments?.getString(ARG_KEY)
 
-        Log.d(TAG, "Clave del producto: $key")
 
-        txtNombreProducto.text = nombre
-        txtDescripcionProducto.text = descripcion
-        txtPrecioProducto.text = "$" + precio.toString()
-        txtBarcode.text = barcode.toString()
-
-        Glide.with(this)
-            .load(img)
-            .apply(RequestOptions().override(400, 450))
-            .into(txtImg)
-
-        btnAgregar.setOnClickListener {
+        btnAnadirATablero.setOnClickListener {
             val cantidad = cantidadLlevar.text.toString().toIntOrNull() ?: 0
             if (cantidad > 0) {
                 ShowOerlay(cantidad)
@@ -108,14 +94,77 @@ class DetallesProductoFragment : Fragment() {
             }
         }
 
+        btnAgregarapres.setOnClickListener {
+            val cantidadActual = cantidadLlevar.text.toString().toIntOrNull() ?: 0
+            cantidadLlevar.setText((cantidadActual + 1).toString())
+        }
+
         btndec.setOnClickListener {
             val cantidadActual = cantidadLlevar.text.toString().toIntOrNull() ?: 0
-            if (cantidadActual >= 1) {
+            if (cantidadActual >= 2) {
                 cantidadLlevar.setText((cantidadActual - 1).toString())
             }
         }
 
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("productos").child(key ?: "")
+        databaseReference.child("precio").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val precioNuevo = dataSnapshot.getValue(Double::class.java) ?: 0.0
+                Log.d(TAG,"$precioNuevo")
+                if (precio != precioNuevo) {
+                    actualizarTextoPrecio(precio, precioNuevo)
+                    precio = precioNuevo
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+            }
+        })
+
+        val databaseReference2: DatabaseReference = FirebaseDatabase.getInstance().getReference("productos")
+        databaseReference2.orderByChild("barcode").equalTo(barcode)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (snapshot in dataSnapshot.children) {
+                            val producto = snapshot.getValue(Productos::class.java)
+                            Log.d(TAG, "Producto: $producto")
+                            producto?.let {
+                                txtNombreProducto.text = it.nombre
+                                txtDescripcionProducto.text = it.descripcion
+                                txtPrecioProducto.text = "$${it.precio}"
+                                txtBarcode.text = it.barcode.toString()
+                                Log.d(TAG, "Cargando imagen desde URL: ${it.imgurl}")
+                                Glide.with(this@DetallesProductoFragment)
+                                    .load(snapshot.child("filepath").getValue(String::class.java))
+                                    .apply(RequestOptions().override(400, 450))
+                                    .into(txtImg)
+                            }
+                        }
+                    } else {
+                        Log.e(TAG, "Producto no encontrado")
+                        Log.e(TAG, "Producto no encontrado ${barcode}")
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+                }
+            })
+
+
         return view
+    }
+
+    // Función para actualizar el texto de txtPrecioProd
+    private fun actualizarTextoPrecio(precioAnterior: Double, precioNuevo: Double) {
+        val textoPrecio = view?.findViewById<TextView>(R.id.txtPrecioProd)
+        if (precioAnterior != 0.0 && precioAnterior != precioNuevo) {
+            textoPrecio?.text = "Antes: $$precioAnterior | Ahora: $$precioNuevo"
+        } else {
+            textoPrecio?.text = "$$precioNuevo"
+        }
     }
 
     private fun ShowOerlay(cantidad: Int) {
@@ -142,6 +191,7 @@ class DetallesProductoFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     val presupuestosList = mutableListOf<String>()
+                    presupuestosList.add("Seleccione el tablero")
 
                     for (snapshot in dataSnapshot.children) {
                         val nombrePresupuesto = snapshot.child("nombre").getValue(String::class.java)
@@ -158,20 +208,17 @@ class DetallesProductoFragment : Fragment() {
 
                     spinnerPresupuestos.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                            if (userSelection) {
+                            if (position > 0) { // Evita la primera opción "Seleccione el tablero"
                                 val nombrePresupuestoSeleccionado = presupuestosList[position]
-                                val productoId = key
-
+                                val productoId = key // Asegúrate de que 'key' esté definido y accesible en este contexto
+                                Log.d(TAG,"La key ess: $key")
                                 if (productoId != null) {
                                     agregarProductoAlPresupuesto(nombrePresupuestoSeleccionado, productoId, cantidad, dialog)
                                 }
-                            } else {
-                                userSelection = false
                             }
                         }
 
                         override fun onNothingSelected(parent: AdapterView<*>?) {}
-
                     }
 
                     spinnerPresupuestos.setOnTouchListener { _, _ ->
@@ -241,47 +288,84 @@ class DetallesProductoFragment : Fragment() {
 
     private fun agregarProductoAlPresupuesto(nombrePresupuesto: String, productoId: String, cantidad: Int, dialog: Dialog) {
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference()
-        databaseReference.child("presupuestos").orderByChild("nombre").equalTo(nombrePresupuesto)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        for (snapshot in dataSnapshot.children) {
-                            val presupuestoKey = snapshot.key
-                            if (presupuestoKey != null) {
-                                val productosReference = databaseReference.child("presupuestos").child(presupuestoKey).child("productos").child(productoId)
+        val productoReference = databaseReference.child("productos").child(productoId)
 
-                                productosReference.addListenerForSingleValueEvent(object : ValueEventListener {
-                                    override fun onDataChange(productSnapshot: DataSnapshot) {
-                                        if (productSnapshot.exists()) {
-                                            Toast.makeText(requireContext(), "El producto ya existe en este tablero", Toast.LENGTH_SHORT).show()
-                                        } else {
-                                            productosReference.setValue(cantidad)
-                                                .addOnSuccessListener {
-                                                    Toast.makeText(requireContext(), "Producto añadido a $nombrePresupuesto", Toast.LENGTH_SHORT).show()
-                                                    dialog.dismiss()  // Close the dialog here
+        productoReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(productoSnapshot: DataSnapshot) {
+                if (productoSnapshot.exists()) {
+                    val precio = productoSnapshot.child("precio").getValue(Double::class.java) ?: 0.0
+                    val totalNuevoProducto = precio * cantidad
+
+                    databaseReference.child("presupuestos").orderByChild("nombre").equalTo(nombrePresupuesto)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    for (snapshot in dataSnapshot.children) {
+                                        val presupuestoKey = snapshot.key
+                                        if (presupuestoKey != null) {
+                                            val productosReference = databaseReference.child("presupuestos").child(presupuestoKey).child("productos").child(productoId)
+                                            val totalReference = databaseReference.child("presupuestos").child(presupuestoKey).child("total")
+
+                                            productosReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                                                override fun onDataChange(productSnapshot: DataSnapshot) {
+                                                    if (productSnapshot.exists()) {
+                                                        Toast.makeText(requireContext(), "El producto ya existe en este tablero", Toast.LENGTH_SHORT).show()
+                                                    } else {
+                                                        productosReference.setValue(cantidad)
+                                                            .addOnSuccessListener {
+                                                                // Actualizar el total del presupuesto
+                                                                totalReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                                                                    override fun onDataChange(totalSnapshot: DataSnapshot) {
+                                                                        var totalActual = totalSnapshot.getValue(Double::class.java) ?: 0.0
+                                                                        totalActual += totalNuevoProducto
+                                                                        val totalFormateado = String.format("%.2f", totalActual).toDouble()
+                                                                        totalReference.setValue(totalFormateado)
+                                                                            .addOnSuccessListener {
+                                                                                Toast.makeText(requireContext(), "Producto añadido a $nombrePresupuesto", Toast.LENGTH_SHORT).show()
+                                                                                dialog.dismiss()  // Close the dialog here
+                                                                            }
+                                                                            .addOnFailureListener { e ->
+                                                                                Log.e(TAG, "Error al actualizar el total del tablero", e)
+                                                                            }
+                                                                    }
+
+                                                                    override fun onCancelled(databaseError: DatabaseError) {
+                                                                        Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+                                                                    }
+                                                                })
+                                                            }
+                                                            .addOnFailureListener { e ->
+                                                                Log.e(TAG, "Error al agregar el producto al tablero", e)
+                                                            }
+                                                    }
                                                 }
-                                                .addOnFailureListener { e ->
-                                                    Log.e(TAG, "Error al agregar el producto al tablero", e)
+
+                                                override fun onCancelled(databaseError: DatabaseError) {
+                                                    Log.e(TAG, "Error de Firebase: ${databaseError.message}")
                                                 }
+                                            })
                                         }
                                     }
-
-                                    override fun onCancelled(databaseError: DatabaseError) {
-                                        Log.e(TAG, "Error de Firebase: ${databaseError.message}")
-                                    }
-                                })
+                                } else {
+                                    Log.e(TAG, "El tablero no existe")
+                                }
                             }
-                        }
-                    } else {
-                        Log.e(TAG, "El tablero no existe")
-                    }
-                }
 
-                override fun onCancelled(databaseError: DatabaseError) {
-                    Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+                            override fun onCancelled(databaseError: DatabaseError) {
+                                Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+                            }
+                        })
+                } else {
+                    Log.e(TAG, "El producto no existe")
                 }
-            })
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+            }
+        })
     }
+
 
     private fun obtenerFechaActual(): String {
         val currentDate = Calendar.getInstance().time
@@ -303,23 +387,16 @@ class DetallesProductoFragment : Fragment() {
     )
 
     companion object {
-        private const val ARG_PRODUCTO = "producto"
+        private const val ARG_BARCODE = "barcode"
         private const val ARG_KEY = "key"
-
         @JvmStatic
-        fun newInstance(producto: Productos, key: String) =
+        fun newInstance(barcode: String, key: String?) =
             DetallesProductoFragment().apply {
                 arguments = Bundle().apply {
-                    putString("nombre", producto.nombre)
-                    putString("descripcion", producto.descripcion)
-                    producto.precio?.let { putDouble("precio", it) }
-                    putString("imgurl", producto.imgurl)
-                    producto.barcode?.let { putLong("barcode", it) }
-                    putString("marca", producto.marca)
-                    putString("categoria", producto.categoria)
-                    putParcelable(ARG_PRODUCTO, producto)
+                    putString(ARG_BARCODE, barcode)
                     putString(ARG_KEY, key)
                 }
             }
     }
+
 }

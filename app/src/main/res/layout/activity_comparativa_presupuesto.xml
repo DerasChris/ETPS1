@@ -106,7 +106,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0"
-                        android:text="TextView"
+                        android:text="500"
                         android:textSize="20sp"
                         android:textStyle="italic" />
                 </LinearLayout>
@@ -242,15 +242,15 @@
                         android:padding="10dp">
 
                         <TextView
-                            android:id="@+id/textView46"
-                            android:layout_width="194dp"
+                            android:id="@+id/tv_p"
+                            android:layout_width="130dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Producto"
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/textView47"
+                            android:id="@+id/tv_c"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -259,11 +259,20 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/textView50"
+                            android:id="@+id/tv_pc"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Precio"
+                            android:textAlignment="textEnd"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tva"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Acción"
                             android:textAlignment="textEnd"
                             android:textStyle="bold" />
                     </LinearLayout>
