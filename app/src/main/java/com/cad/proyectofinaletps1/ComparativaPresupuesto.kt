@@ -1,12 +1,10 @@
 package com.cad.proyectofinaletps1
 
 import android.content.ContentValues.TAG
-import android.content.Context
-import android.content.SharedPreferences
-import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.database.*
-import kotlin.time.times
 
 class ComparativaPresupuesto : AppCompatActivity() {
 
@@ -26,10 +23,13 @@ class ComparativaPresupuesto : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     private var montox: Double = 0.0;
     private var presupuestoEncontrado: Presupuesto? = null
-
+    private lateinit var adapter: ProductosHistorialAdapter
+    private var nombreppres: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val nombrePresupuesto = intent.getStringExtra("nombre")
+        nombreppres = nombrePresupuesto
         setContentView(R.layout.activity_comparativa_presupuesto)
 
         val recyclerView: RecyclerView = findViewById(R.id.rvProductosHistorial)
@@ -40,9 +40,9 @@ class ComparativaPresupuesto : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        Log.d(TAG, "acá truena")
 
-        val nombrePresupuesto = intent.getStringExtra("nombre")
+
+
 
         val txtNombrePresupuesto = findViewById<TextView>(R.id.txtNombrePresupuesto)
         val txtTotalPresupuesto = findViewById<TextView>(R.id.txtTotalPresupuesto)
@@ -80,7 +80,6 @@ class ComparativaPresupuesto : AppCompatActivity() {
             })
         }
 
-        var totalProductosPresupuesto = 0.0
 
         database = FirebaseDatabase.getInstance()
 
@@ -107,15 +106,22 @@ class ComparativaPresupuesto : AppCompatActivity() {
                                     override fun onDataChange(snapshot: DataSnapshot) {
                                         val producto = snapshot.getValue(Producto::class.java)
                                         if (producto != null) {
-                                            productosHistorialList.add(
+                                            val productoHistorialItem =
                                                 ProductoHistorialItem(
                                                     producto.nombre.toString(),
                                                     productoQty.value,
-                                                    producto.precio as Double
+                                                    producto.precio as Double,
+                                                    producto.productoKeyy.toString()
                                                 )
-                                            )
 
-                                            totalProductosPresupuesto += producto.precio * productoQty.value
+
+                                            if (productoHistorialItem != null) {
+                                                productosHistorialList.add(productoHistorialItem)
+                                            }
+
+                                            totalProductosPresupuesto += producto.precio?.times(
+                                                productoQty.value
+                                            ) ?: 0.0
 
                                             val disponible = montox?.minus(totalProductosPresupuesto) ?: 0.0
                                             val porcentajeUsado = if (montox > 0) {
@@ -128,9 +134,20 @@ class ComparativaPresupuesto : AppCompatActivity() {
                                             txtConsumido.text = "$" + String.format("%.2f", totalProductosPresupuesto)
                                             txtDisponible.text = "$" + String.format("%.2f", disponible)
 
-                                            // Only set the adapter once all products have been processed
+
                                             if (index == productosList.size - 1) {
-                                                val adapter = ProductosHistorialAdapter(productosHistorialList)
+                                                // Construir el adaptador con la lista de elementos
+                                                adapter = ProductosHistorialAdapter(productosHistorialList) { producto ->
+                                                    // Utilizar la clave del producto asociada con el elemento de la lista
+                                                    val presupuestoKey = nombrePresupuesto
+                                                    val claveProducto = producto.toString()
+                                                    if (presupuestoKey != null) {
+                                                        if (claveProducto != null) {
+                                                            eliminarProductoDePresupuesto(presupuestoKey, claveProducto)
+                                                        }
+                                                    }
+                                                }
+// Asignar el adaptador al RecyclerView
                                                 recyclerView.adapter = adapter
                                             }
                                         } else {
@@ -154,6 +171,29 @@ class ComparativaPresupuesto : AppCompatActivity() {
         })
     }
 
+    private fun eliminarProductoDePresupuesto(claveProducto: String, presupuestoName: String) {
+        val presupuestoId = nombreppres
+
+        // Verificar si se obtuvo correctamente el ID del presupuesto
+        if (presupuestoId != null) {
+            val presupuestosRef = FirebaseDatabase.getInstance().getReference("presupuestos").child(presupuestoId)
+            Log.d(TAG,"El productos es: $claveProducto")
+            Log.d(TAG,"El key es: $presupuestoName")
+            // Eliminar el producto del presupuesto utilizando la clave del producto
+            presupuestosRef.child("productos").child(claveProducto).removeValue()
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Producto eliminado del presupuesto", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Error al eliminar el producto del presupuesto", Toast.LENGTH_SHORT).show()
+                }
+        } else {
+            Toast.makeText(this, "Error: no se pudo obtener el ID del presupuesto", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
     fun calcularPorcentajeDisponible(cantidadConsumida: Double, cantidadTotal: Double): Double {
         val porcentajeDisponible = (cantidadConsumida / cantidadTotal) * 100
         return porcentajeDisponible
@@ -176,5 +216,6 @@ data class Producto(
     val filepath: String? = "",
     val marca: String? = "",
     val nombre: String? = "",
-    val precio: Double? = 0.0
+    val precio: Double? = 0.0,
+    val productoKeyy: String? = ""
 )

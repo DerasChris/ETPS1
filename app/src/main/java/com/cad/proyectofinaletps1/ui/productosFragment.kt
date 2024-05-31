@@ -182,17 +182,19 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
                         totalConsumido += total
                     }
 
-                    if (totalConsumido > monto) {
-                        val red = ContextCompat.getColor(requireContext(), R.color.red)
-                        txtTotalConsumido.setTextColor(red)
-                        txtTotalConsumido.text = "$%.2f".format(totalConsumido)
-                        val diferencia = kotlin.math.abs(totalConsumido - monto)
-                        textaviso.text = "Has excedido tu presupuesto por: $%.2f".format(diferencia)
-                        textaviso?.visibility = View.VISIBLE
-                    } else {
-                        val black = ContextCompat.getColor(requireContext(), R.color.black)
-                        txtTotalConsumido.setTextColor(black)
-                        txtTotalConsumido.text = "$%.2f".format(totalConsumido)
+                    if (isAdded) {
+                        if (totalConsumido > monto) {
+                            val red = ContextCompat.getColor(requireContext(), R.color.red)
+                            txtTotalConsumido.setTextColor(red)
+                            txtTotalConsumido.text = "$%.2f".format(totalConsumido)
+                            val diferencia = kotlin.math.abs(totalConsumido - monto)
+                            textaviso.text = "Has excedido tu presupuesto por: $%.2f".format(diferencia)
+                            textaviso.visibility = View.VISIBLE
+                        } else {
+                            val black = ContextCompat.getColor(requireContext(), R.color.black)
+                            txtTotalConsumido.setTextColor(black)
+                            txtTotalConsumido.text = "$%.2f".format(totalConsumido)
+                        }
                     }
                 }
 
