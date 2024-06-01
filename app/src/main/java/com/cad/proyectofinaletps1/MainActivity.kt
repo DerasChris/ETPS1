@@ -10,7 +10,8 @@ import androidx.core.view.WindowInsetsCompat
 
 enum class ProviderType{
     BASIC,
-    GOOGLE
+    GOOGLE,
+    FACEBOOK
 }
 
 class MainActivity : AppCompatActivity() {

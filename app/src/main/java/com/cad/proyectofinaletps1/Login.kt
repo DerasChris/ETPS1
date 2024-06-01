@@ -24,6 +24,8 @@ import com.google.firebase.auth.GoogleAuthProvider
 
 class Login : AppCompatActivity() {
     private val GOOGLE_SIGN_IN = 100
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -34,6 +36,7 @@ class Login : AppCompatActivity() {
         val  lblCorreo = findViewById<TextView>(R.id.lblCorreo)
         val lblpass = findViewById<TextView>(R.id.lblPass)
         val imvGoogle = findViewById<ImageView>(R.id.imvGoogle)
+        val fbBtn = findViewById<ImageView>(R.id.imvFacebook)
 
         edtCorreo.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -86,6 +89,11 @@ class Login : AppCompatActivity() {
 
             val googleClient = GoogleSignIn.getClient(this,googleConf)
             startActivityForResult(googleClient.signInIntent,GOOGLE_SIGN_IN)
+        }
+
+        fbBtn.setOnClickListener {
+            //facebook
+
         }
 
     }

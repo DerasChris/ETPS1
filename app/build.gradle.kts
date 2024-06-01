@@ -40,6 +40,11 @@ android {
 
 dependencies {
 
+    implementation ("com.facebook.android:facebook-android-sdk:[4,5)")
+    implementation ("com.facebook.android:facebook-core:[4,5)")
+    implementation ("com.facebook.android:facebook-marketing:[4,5)")
+    implementation ("com.facebook.android:facebook-android-sdk:[4,5)")
+
     implementation(libs.androidx.core.ktx)
     implementation("com.airbnb.android:lottie:6.4.0")
     implementation(libs.androidx.appcompat)
@@ -54,5 +59,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
-
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation("com.google.firebase:firebase-auth-ktx")
 }
+
+
