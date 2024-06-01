@@ -143,6 +143,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="78dp"
                 android:layout_marginTop="15dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 app:cardCornerRadius="8dp">
 
                 <LinearLayout
@@ -172,15 +174,14 @@
                 android:padding="25dp">
 
                 <androidx.cardview.widget.CardView
-                    android:layout_width="330dp"
+                    android:layout_width="600dp"
                     android:layout_height="200dp"
-                    android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     app:cardBackgroundColor="#2A9D8F"
                     app:cardCornerRadius="12dp">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="357dp"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
                         android:padding="15dp">
@@ -196,7 +197,7 @@
 
                         <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
-                            android:layout_height="78dp"
+                            android:layout_height="70dp"
                             android:layout_marginTop="15dp"
                             app:cardCornerRadius="8dp">
 
@@ -210,11 +211,11 @@
                                     android:id="@+id/editTextPpto"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:hint="Ponga su monto "
+                                    android:hint="Introduzca su nuevo monto presupuestal"
                                     android:inputType="numberDecimal"
                                     android:textAlignment="center"
                                     android:textColor="#E76351"
-                                    android:textSize="24sp"
+                                    android:textSize="17sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
 
@@ -224,13 +225,12 @@
                             android:id="@+id/button2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="#264653"
-                            android:backgroundTint="#264653"
-                            android:drawableTint="#264653"
+                            android:layout_marginTop="20px"
+                            android:background="#f4a464"
+                            android:backgroundTint="#f4a464"
                             android:text="Guardar"
-                            android:textColorLink="#264653"
-                            app:cornerRadius="8dp"
-                            app:strokeColor="#264653" />
+                            android:textColorLink="#f4a464"
+                            app:cornerRadius="10dp" />
 
                     </LinearLayout>
 

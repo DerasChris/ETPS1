@@ -198,8 +198,34 @@ class DetallesProductoFragment : Fragment() {
                         nombrePresupuesto?.let { presupuestosList.add(it) }
                     }
 
-                    val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, presupuestosList)
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    val adapter = object : ArrayAdapter<String>(requireContext(), R.layout.spinner_item, R.id.txtTablero, presupuestosList) {
+                        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                            val view = super.getView(position, convertView, parent)
+                            val btnDelete = view.findViewById<Button>(R.id.btnDelete)
+                            btnDelete.setOnClickListener {
+                                // Handle delete action
+                                if (position > 0) {
+                                    val nombrePresupuestoSeleccionado = presupuestosList[position]
+                                    eliminarPresupuesto(nombrePresupuestoSeleccionado)
+                                }
+                            }
+                            return view
+                        }
+
+                        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                            val view = super.getDropDownView(position, convertView, parent)
+                            val btnDelete = view.findViewById<Button>(R.id.btnDelete)
+                            btnDelete.setOnClickListener {
+                                // Handle delete action
+                                if (position > 0) {
+                                    val nombrePresupuestoSeleccionado = presupuestosList[position]
+                                    eliminarPresupuesto(nombrePresupuestoSeleccionado)
+                                }
+                            }
+                            return view
+                        }
+                    }
+
                     spinnerPresupuestos.adapter = adapter
 
                     val nombrePresupuestoPredeterminado = presupuestosList[0]
@@ -285,6 +311,29 @@ class DetallesProductoFragment : Fragment() {
             }
         }
     }
+
+    private fun eliminarPresupuesto(nombrePresupuesto: String) {
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("presupuestos")
+        databaseReference.orderByChild("nombre").equalTo(nombrePresupuesto)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (snapshot in dataSnapshot.children) {
+                        snapshot.ref.removeValue()
+                            .addOnSuccessListener {
+                                Toast.makeText(requireContext(), "Tablero eliminado", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e(TAG, "Error al eliminar el tablero", e)
+                            }
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e(TAG, "Error de Firebase: ${databaseError.message}")
+                }
+            })
+    }
+
 
     private fun agregarProductoAlPresupuesto(nombrePresupuesto: String, productoId: String, cantidad: Int, dialog: Dialog) {
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference()
