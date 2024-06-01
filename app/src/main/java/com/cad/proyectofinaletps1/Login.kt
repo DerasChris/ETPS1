@@ -31,7 +31,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-
 class Login : AppCompatActivity() {
     private val GOOGLE_SIGN_IN = 100
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -129,13 +128,8 @@ class Login : AppCompatActivity() {
             // Iniciar sesión de Google
             val signInIntent = googleClient.signInIntent
             startActivityForResult(signInIntent, GOOGLE_SIGN_IN)
-
-
-
         }
-
     }
-
     private fun ShowAlert(message:String) {
         val dialog = Dialog(this)
         dialog.setCancelable(true)
@@ -181,8 +175,6 @@ class Login : AppCompatActivity() {
         }
         startActivity(homeIntent)
     }
-
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GOOGLE_SIGN_IN) {
@@ -257,6 +249,4 @@ class Login : AppCompatActivity() {
             }
         }
     }
-
-
 }

@@ -28,7 +28,6 @@ class activity_perfil : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var buttonActualizar: Button
     private lateinit var editTextPpto: EditText
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -68,7 +67,6 @@ class activity_perfil : AppCompatActivity() {
             firebaseAuth = FirebaseAuth.getInstance()
             val currentUser: FirebaseUser? = firebaseAuth.currentUser
             val usuarioId = currentUser?.uid
-
             databaseReference = FirebaseDatabase.getInstance().reference
 
             // Obtener el monto actual del usuario
