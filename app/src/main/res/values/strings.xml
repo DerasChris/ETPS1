@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PROYECTOFINALETPS1</string>
+    <string name="app_name">Tienda el Ahorro</string>
     <string name="default_web_client_id" translatable="false">AIzaSyCf6fsW86mohTbTeczwUVtNbkqicwUIY-4</string>
     <string name="title_activity_main2">MainActivity2</string>
     <string name="title_home">Home</string>

@@ -13,14 +13,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.cad.proyectofinaletps1.models.Productos
 import com.cad.proyectofinaletps1.ui.productosFragment
-
 class AdaptadorProductos(private val dataList: List<Productos>,private val productKeys: MutableList<String>) : RecyclerView.Adapter<AdaptadorProductos.ViewHolder>() {
     private var listener: OnItemClickListener? = null
     interface OnItemClickListener {
         fun onItemClick(producto: Productos, key: String)
     }
-
-
     fun setOnItemClickListener(listener: productosFragment) {
         this.listener = listener
     }
