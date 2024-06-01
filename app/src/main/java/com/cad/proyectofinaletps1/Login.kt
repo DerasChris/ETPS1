@@ -1,5 +1,4 @@
 package com.cad.proyectofinaletps1
-
 import android.app.Dialog
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -30,7 +29,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-
 class Login : AppCompatActivity() {
     private val GOOGLE_SIGN_IN = 100
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +41,6 @@ class Login : AppCompatActivity() {
         val  lblCorreo = findViewById<TextView>(R.id.lblCorreo)
         val lblpass = findViewById<TextView>(R.id.lblPass)
         val imvGoogle = findViewById<ImageView>(R.id.imvGoogle)
-
         edtCorreo.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -59,14 +56,12 @@ class Login : AppCompatActivity() {
                 }
             }
         })
-
         edtPass.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             }
-
             override fun afterTextChanged(s: Editable?) {
                 if (s.isNullOrEmpty()) {
                     lblpass.visibility = View.INVISIBLE
@@ -75,7 +70,6 @@ class Login : AppCompatActivity() {
                 }
             }
         })
-
         btnLogin.setOnClickListener {
             // To-Do: Remove this and move it to the nav bar
             /*val presupuestosIntent = Intent(this,PresupuestosUsuario::class.java)
@@ -135,15 +129,12 @@ class Login : AppCompatActivity() {
         dialog.setCancelable(true)
         dialog.setContentView(R.layout.layout_fail)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-
         val mensaje : TextView = dialog.findViewById(R.id.txtMessage)
 
         mensaje.text = message
 
         dialog.show()
     }
-
     private fun ShowOerlay(message:String){
         val dialog = Dialog(this)
         dialog.setCancelable(true)
@@ -155,9 +146,7 @@ class Login : AppCompatActivity() {
         mensaje.text = message
 
         dialog.show()
-
     }
-
     private fun ShowHome(email: String, provider: ProviderType,user:String, urlPhoto: String){
         val homeIntent = Intent(this,navegacion::class.java).apply {
             putExtra("Mail",email)
@@ -167,7 +156,6 @@ class Login : AppCompatActivity() {
         }
         startActivity(homeIntent)
     }
-
     private fun ShowHome(email: String, provider: ProviderType,){
         val homeIntent = Intent(this,navegacion::class.java).apply {
             putExtra("Mail",email)
@@ -190,7 +178,6 @@ class Login : AppCompatActivity() {
                             val email = user?.email ?: ""
                             val userId = user?.uid ?: ""
                             val profile = user?.photoUrl ?: ""
-
                             Log.d(TAG,"LA URL DE LA FOTO ES: $profile")
 
                             // Verificar si el usuario ya está registrado
@@ -211,16 +198,13 @@ class Login : AppCompatActivity() {
                                         editor.putString("profile", profile.toString())
                                         editor.apply()
                                         ShowHome("$email", ProviderType.GOOGLE,"$displayName",profile.toString())
-
                                     } else {
                                         // El usuario no está registrado, guardar sus datos en la base de datos
                                         val userData = HashMap<String, Any>()
                                         userData["nombre"] = displayName ?: ""
                                         userData["correo"] = email
                                         userData["uuid"] = userId
-
                                         usersRef.child("usuario_$userId").setValue(userData)
-
                                         val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
                                         val editor = sharedPreferences.edit()
                                         editor.putString("userUUID", "usuario_$userId")
@@ -233,7 +217,6 @@ class Login : AppCompatActivity() {
                                         ShowHome("$email", ProviderType.GOOGLE)
                                     }
                                 }
-
                                 override fun onCancelled(error: DatabaseError) {
                                     // Manejar el error de la consulta
                                     ShowAlert("Error al verificar el usuario en la base de datos")
