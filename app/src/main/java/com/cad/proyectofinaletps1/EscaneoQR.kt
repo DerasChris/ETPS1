@@ -8,6 +8,9 @@ class EscaneoQR : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val bundle = intent.extras
+        val email = bundle?.getString("Mail")
+        val provider = bundle?.getString("provider")
         setContentView(R.layout.activity_escaneo_qr)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
