@@ -107,22 +107,17 @@ class barcodeFragment : Fragment() {
         val txtDesc = view?.findViewById<TextView>(R.id.txtDescrip)
         val txtprice = view?.findViewById<TextView>(R.id.txtPreciop)
         val imvProd = view?.findViewById<ImageView>(R.id.imvSProd)
-
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents.isNullOrEmpty()) {
                 Toast.makeText(requireContext(), "Cancelado", Toast.LENGTH_LONG).show()
             } else {
                 scannedBarcode = result.contents
-
                 val database = FirebaseDatabase.getInstance()
                 val ref = database.getReference("productos")
-
                 ref.orderByChild("barcode").equalTo(scannedBarcode)
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-
                             if (dataSnapshot.exists()) {
                                 linearlayo?.visibility = View.VISIBLE
                                 for (productSnapshot in dataSnapshot.children) {

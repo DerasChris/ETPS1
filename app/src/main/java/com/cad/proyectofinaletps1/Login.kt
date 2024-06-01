@@ -78,10 +78,6 @@ class Login : AppCompatActivity() {
         })
 
         btnLogin.setOnClickListener {
-            // To-Do: Remove this and move it to the nav bar
-            /*val presupuestosIntent = Intent(this,PresupuestosUsuario::class.java)
-            startActivity(presupuestosIntent)*/
-
             if (edtCorreo.text.isNotEmpty() && edtPass.text.isNotEmpty()){
                 FirebaseAuth.getInstance().signInWithEmailAndPassword(edtCorreo.text.toString(),
                     edtPass.text.toString()).addOnCompleteListener{
@@ -114,26 +110,17 @@ class Login : AppCompatActivity() {
 
         imvGoogle.setOnClickListener {
             // Configurar opciones de inicio de sesión de Google
-
             val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build()
-
             // Crear cliente de inicio de sesión de Google
             val googleClient = GoogleSignIn.getClient(this, googleConf)
-
-
             googleClient.signOut()
-
             // Iniciar sesión de Google
             val signInIntent = googleClient.signInIntent
             startActivityForResult(signInIntent, GOOGLE_SIGN_IN)
-
-
-
         }
-
     }
 
     private fun ShowAlert(message:String) {
@@ -198,13 +185,10 @@ class Login : AppCompatActivity() {
                             val email = user?.email ?: ""
                             val userId = user?.uid ?: ""
                             val profile = user?.photoUrl ?: ""
-
                             Log.d(TAG,"LA URL DE LA FOTO ES: $profile")
-
                             // Verificar si el usuario ya está registrado
                             val database = FirebaseDatabase.getInstance()
                             val usersRef = database.getReference("usuarios")
-
                             usersRef.child("usuario_$userId").addListenerForSingleValueEvent(object :
                                 ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {

@@ -50,36 +50,26 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_productos, container, false)
-
-
         // Encontrar RecyclerView en el diseño del fragmento
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
-
         // Configurar el GridLayoutManager para mostrar 2 tarjetas por fila
         val layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerView.layoutManager = layoutManager
-
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("productos")
-
         val dataList: MutableList<Productos> = mutableListOf()
         val productKeys: MutableList<String> = mutableListOf()
-
         val btnperf = view.findViewById<Button>(R.id.btnperfil)
-
         btnperf.setOnClickListener {
             val intent = Intent(context, activity_perfil::class.java)
             startActivity(intent)
         }
-
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 dataList.clear()
                 productKeys.clear()
-
                 for (snapshot in dataSnapshot.children) {
                     val productKey = snapshot.key
                     productKey?.let {productKeys.add(it)}
-
                     val nombre = snapshot.child("nombre").getValue(String::class.java)
                     val descripcion = snapshot.child("descripcion").getValue(String::class.java)
                     val precio = snapshot.child("precio").getValue(Double::class.java)
@@ -87,19 +77,14 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
                     val barcode = snapshot.child("barcode").getValue(String::class.java)
                     val categoria = snapshot.child("categoria").getValue(String::class.java)
                     val marca = snapshot.child("marca").getValue(String::class.java)
-
-
                     if (nombre != null && descripcion != null && precio != null) {
                         dataList.add(Productos(nombre, descripcion, precio, img,barcode,categoria,marca,productKey))
                     }
                 }
-
                 val adapter = AdaptadorProductos(dataList,productKeys)
                 // Configurar el listener en el adaptador
                 adapter.setOnItemClickListener(this@productosFragment)
                 recyclerView.adapter = adapter
-
-
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 // Manejar errores de Firebase
@@ -129,7 +114,7 @@ class productosFragment : Fragment(), AdaptadorProductos.OnItemClickListener {
         Glide.with(this)
             .load(profileURL)
             .circleCrop()
-            .apply(RequestOptions().override(150, 150)) // Opcional: ajustar el tamaño de la imagen
+            .apply(RequestOptions().override(150, 150))
             .into(imgProfile)
 
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("monto")
